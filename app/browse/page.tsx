@@ -6,7 +6,7 @@ export const metadata = {
   title: "Browse",
 };
 
-export default function BrowsePage({ searchParams }: PageProps<"/browse">) {
+export default function BrowsePage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
       <p className="text-[11px] uppercase tracking-[0.24em] text-gold">Catalog</p>
@@ -21,7 +21,7 @@ export default function BrowsePage({ searchParams }: PageProps<"/browse">) {
       </div>
       <div className="mt-8">
         <Suspense fallback={<GridSkeleton />}>
-          <CatalogResults searchParams={searchParams} />
+          <CatalogResults />
         </Suspense>
       </div>
     </div>
