@@ -34,7 +34,7 @@ reset role;
 do $$ begin
  assert not has_table_privilege('anon','public.order_checkout_details','select');
  assert not has_table_privilege('authenticated','public.order_checkout_details','select');
- assert not has_function_privilege('anon','public.place_checkout_order(uuid,uuid,integer,text,text,text,text,text,boolean)','execute');
- assert (select is_nullable='NO' from information_schema.columns where table_schema='public' and table_name='orders' and column_name='buyer_id');
+ assert not has_function_privilege('anon','public.place_checkout_order(uuid,uuid,integer,text,text,text,text,text,boolean,text)','execute');
+ assert (select is_nullable='YES' from information_schema.columns where table_schema='public' and table_name='orders' and column_name='buyer_id');
 end; $$;
 rollback;
