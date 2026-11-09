@@ -136,15 +136,3 @@ export type CheckoutDetails = {
   address: string;
   payment_method: "simulated_card" | "simulated_gcash";
 };
-
-export type OrderPricing = {
-  order_id: string;
-  merchandise_amount: number;
-  commission_rate: number;
-  inspection_fee: number;
-  inspection_status: "not_requested" | "pending" | "completed";
-  commission_amount: number;
-  seller_proceeds: number;
-  buyer_total: number;
-};
-export type CheckoutPricingRules = { commission_rate: number; physical_inspection_fee: number };

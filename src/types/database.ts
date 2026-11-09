@@ -1,8 +1,6 @@
 import type {
   EscrowStatus,
   CheckoutDetails,
-  OrderPricing,
-  CheckoutPricingRules,
   Order,
   OrderInsert,
   OrderUpdate,
@@ -49,12 +47,6 @@ export interface Database {
           },
         ];
       };
-      order_pricing: {
-        Row: OrderPricing;
-        Insert: Pick<OrderPricing, "order_id" | "merchandise_amount" | "commission_rate">;
-        Update: Partial<Pick<OrderPricing, "inspection_fee" | "inspection_status">>;
-        Relationships: [];
-      };
       order_checkout_details: {
         Row: CheckoutDetails;
         Insert: CheckoutDetails;
@@ -83,24 +75,14 @@ export interface Database {
         ];
       };
     };
-    Views: {
-      order_revenue: {
-        Row: { order_id: string; commission_revenue: number; inspection_revenue: number };
-        Relationships: [];
-      };
-    };
+    Views: { [_ in never]: never; };
     Functions: {
       place_checkout_order: {
-        Args: {
-          p_product_id: string; p_buyer_id: string | null; p_quantity: number;
+        Args: Database["public"]["Functions"]["place_catalog_order"]["Args"] & {
           p_full_name: string; p_email: string; p_phone: string;
-          p_address: string; p_payment_method: string; p_inspection_requested?: boolean; p_guest_token_hash?: string | null;
+          p_address: string; p_payment_method: string; p_guest_token_hash: string | null;
         };
         Returns: Order;
-      };
-      checkout_pricing_rules: {
-        Args: Record<PropertyKey, never>;
-        Returns: CheckoutPricingRules;
       };
       is_admin: {
         Args: Record<PropertyKey, never>;
@@ -109,7 +91,7 @@ export interface Database {
       place_catalog_order: {
         Args: {
           p_product_id: string;
-          p_buyer_id: string;
+          p_buyer_id: string | null;
           p_quantity: number;
           p_verification_option: VerificationOption;
           p_expected_unit_price: number;

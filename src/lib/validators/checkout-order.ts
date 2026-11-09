@@ -1,9 +1,7 @@
 import { z } from "zod";
-import { createOrderSchema, productIdSchema } from "./catalog";
+import { pricingQuoteSchema } from "./catalog";
 
-export const checkoutOrderSchema = z.object({
-  product_id: productIdSchema,
-  quantity: createOrderSchema.shape.quantity,
+export const checkoutOrderSchema = pricingQuoteSchema.extend({
   customer: z.object({
     full_name: z.string().trim().min(2).max(120),
     email: z.string().trim().email().max(254),
@@ -11,6 +9,5 @@ export const checkoutOrderSchema = z.object({
     address: z.string().trim().min(10).max(500),
   }),
   payment_method: z.enum(["simulated_card", "simulated_gcash"]),
-  inspection_requested: z.boolean().default(false),
   payment_confirmed: z.literal(true),
 });
