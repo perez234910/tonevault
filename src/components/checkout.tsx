@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import type { Session } from "@supabase/supabase-js";
-import { BuyerAccount } from "@/src/components/buyer-account";
+import dynamic from "next/dynamic";
+
+const BuyerAccount = dynamic(() => import("@/src/components/buyer-account").then(module => module.BuyerAccount), { ssr: false });
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/src/components/cart-context";
@@ -15,6 +17,7 @@ export function Checkout({ productId }: { productId: string }) {
   const [pricing, setPricing] = useState<CheckoutPricingRules | null>(null);
   const [pricingError, setPricingError] = useState("");
   const [inspection, setInspection] = useState(false);
+  const [showAccount, setShowAccount] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [selected, setSelected] = useState(productId);
   const [busy, setBusy] = useState(false);
@@ -40,14 +43,14 @@ export function Checkout({ productId }: { productId: string }) {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!item || !session || !pricing || submitting.current) return;
+    if (!item || !pricing || submitting.current) return;
     const form = new FormData(event.currentTarget);
     submitting.current = true;
     setBusy(true);
     setError("");
     try {
       const response = await fetch("/api/orders", {
-        method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        method: "POST", headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}) },
         body: JSON.stringify({
           product_id: item.id, quantity: 1, inspection_requested: inspection,
           customer: { full_name: form.get("full_name"), email: form.get("email"), phone: form.get("phone"), address: form.get("address") },
@@ -73,14 +76,15 @@ export function Checkout({ productId }: { productId: string }) {
   const inputClass = "mt-2 w-full rounded-lg border border-line bg-background p-3 text-foreground";
   return (
     <section className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
-      <p className="text-xs uppercase tracking-widest text-gold">Buyer account required</p>
+      <p className="text-xs uppercase tracking-widest text-gold">No account required</p>
       <h1 className="mt-2 font-serif text-4xl">Checkout</h1>
       <p className="mt-4 text-muted">This is a simulated checkout. No money is charged or held in escrow. Do not enter real payment credentials.</p>
-      <BuyerAccount onSession={setSession} />
+      <button type="button" className="mt-4 text-gold underline" onClick={() => { setShowAccount(!showAccount); setSession(null); }}>{showAccount ? "Continue as guest" : "Sign in instead (optional)"}</button>
+      {showAccount && <BuyerAccount onSession={setSession} />}
       {pricingError ? <p role="alert">{pricingError}</p> : !pricing ? <p role="status">Loading checkout pricing…</p> : null}
       {!item ? <p className="mt-8">Your cart is empty. <Link className="text-gold underline" href="/browse">Browse instruments</Link></p> : (
         <form onSubmit={submit} className="mt-8 space-y-6">
-          <fieldset disabled={busy || !session || !pricing} className="space-y-6 disabled:opacity-60">
+          <fieldset disabled={busy || !pricing} className="space-y-6 disabled:opacity-60">
             <legend className="font-serif text-2xl">Your instrument</legend>
             <p className="text-sm text-muted">Check out one instrument at a time. Other items stay in your cart.</p>
             <label className="block">Instrument

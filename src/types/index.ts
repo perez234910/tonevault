@@ -44,7 +44,7 @@ export type Product = {
 export type Order = {
   id: string;
   product_id: string;
-  buyer_id: string;
+  buyer_id: string | null;
   quantity: number;
   total_amount: number;
   escrow_status: EscrowStatus;
@@ -116,6 +116,7 @@ export type ActionResult<T> =
     };
 
 export type CheckoutDetails = {
+  guest_token_hash: string | null;
   order_id: string;
   full_name: string;
   email: string;

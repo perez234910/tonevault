@@ -2,7 +2,7 @@ import { createAdminClient } from "@/src/lib/supabase/admin";
 import { checkoutOrderSchema } from "@/src/lib/validators/checkout-order";
 import type { ActionResult, Order } from "@/src/types";
 
-export async function placeCheckoutOrder(input: unknown, buyerId: string): Promise<ActionResult<{ order: Order }>> {
+export async function placeCheckoutOrder(input: unknown, buyerId: string | null, guestTokenHash: string | null = null): Promise<ActionResult<{ order: Order }>> {
   const parsed = checkoutOrderSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, code: "VALIDATION_ERROR", error: "Check your customer and simulated payment details.",
@@ -13,7 +13,7 @@ export async function placeCheckoutOrder(input: unknown, buyerId: string): Promi
     const { data, error } = await createAdminClient().rpc("place_checkout_order", {
       p_product_id: product_id, p_quantity: quantity, p_buyer_id: buyerId, p_full_name: customer.full_name,
       p_email: customer.email, p_phone: customer.phone, p_address: customer.address,
-      p_payment_method: payment_method, p_inspection_requested: inspection_requested,
+      p_payment_method: payment_method, p_inspection_requested: inspection_requested, p_guest_token_hash: guestTokenHash,
     });
     if (error) {
       if (/LISTING_NOT_FOUND/.test(error.message)) return { ok: false, code: "NOT_FOUND", error: "Instrument not found." };
