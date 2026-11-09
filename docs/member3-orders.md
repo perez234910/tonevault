@@ -83,7 +83,9 @@ Files: `src/components/checkout.tsx` submit handler → `app/api/orders/route.ts
 - Actual local Next.js → PostgREST → disposable PostgreSQL HTTP checks passed: all three quote choices (including ignored browser totals), invalid choice400, guest order201 with remote total487800, protected saved confirmation200, and sold-item409. Shared Supabase has not been changed.
 - Automated review found no critical/important introduced mismatch. This is not a human PR review.
 
-Real Supabase Auth/email, full browser/phone usability, deployed checks and Challenge 2 evidence remain pending. Earlier clean builds failed fetching the unchanged Google fonts, and full lint has the existing state-in-effect error in untouched cart-context. Local tests do not replace deployed evidence.
+Fresh configured production build passed. Actual local desktop-browser guest flow passed: add a disposable PHP168,000 instrument, choose remote verification, observe fee2800/total170800, submit simulated customer/payment details, and reload the saved confirmation. No browser Console errors were captured. Evidence: `member3-member4-confirmation-local.png`.
+
+Real Supabase Auth/email, phone-width usability, deployed checks and Challenge 2 evidence remain pending. Full lint still has the existing state-in-effect error in untouched cart-context. Local tests and synthetic fixtures do not replace deployed evidence.
 
 ## Team handoff
 
