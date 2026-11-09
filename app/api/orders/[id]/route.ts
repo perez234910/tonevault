@@ -27,16 +27,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }
     // The service client bypasses RLS: authorize the account or private cookie first.
     let query = supabase.from("orders")
-      .select("id, product_id, buyer_id, quantity, total_amount, escrow_status, tracking_number, created_at")
+      .select("id, product_id, buyer_id, quantity, unit_price, subtotal_amount, verification_option, verification_fee, commission_rate_bps, commission_amount, seller_payout_amount, platform_revenue_amount, total_amount, escrow_status, tracking_number, created_at")
       .eq("id", id);
     query = buyerId ? query.eq("buyer_id", buyerId) : query.is("buyer_id", null);
     const { data: order, error } = await query.maybeSingle();
     if (error) throw error;
     if (!order) return missing();
-    const { data: pricing, error: pricingError } = await supabase.from("order_pricing")
-      .select("*").eq("order_id", order.id).maybeSingle();
-    if (pricingError) throw pricingError;
-    return Response.json({ ok: true, data: { pricing, order: {
+    return Response.json({ ok: true, data: { order: {
       ...order, quantity: Number(order.quantity), total_amount: Number(order.total_amount),
     } } }, { headers });
   } catch {

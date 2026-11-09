@@ -2,7 +2,7 @@
   "info": {
     "name": "Group 2 Member 3 GC2 checkout",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Guest checkout is the default: set baseUrl and an available productId, keep cookie jar enabled. Optional account requests may add Bearer accessToken. Create consumes stock. Commission is seller-paid 8%; optional physical inspection is PHP8500."
+    "description": "Requires reviewed Member 4 PRs40/41/42 and Member 3 details migration. Guest checkout uses customer fields and cookie jar; optional accounts use a buyer token. Pricing is exclusively Member4: verification_option none/remote/physical. Create consumes stock."
   },
   "variable": [
     {
@@ -35,7 +35,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": 0,\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Manila\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true,\n  \"inspection_requested\": false\n}"
+          "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": 0,\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Manila\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true,\n  \"verification_option\": \"none\"\n}"
         },
         "url": "{{baseUrl}}/api/orders"
       },
@@ -63,7 +63,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"product_id\": \"cccccccc-cccc-4ccc-8ccc-cccccccccccc\",\n  \"quantity\": 1,\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Manila\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true,\n  \"inspection_requested\": false\n}"
+          "raw": "{\n  \"product_id\": \"cccccccc-cccc-4ccc-8ccc-cccccccccccc\",\n  \"quantity\": 1,\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Manila\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true,\n  \"verification_option\": \"none\"\n}"
         },
         "url": "{{baseUrl}}/api/orders"
       },
@@ -91,7 +91,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": 1,\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Manila\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true,\n  \"total\": 1,\n  \"inspection_requested\": false\n}"
+          "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": 1,\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Manila\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true,\n  \"total\": 1,\n  \"verification_option\": \"none\"\n}"
         },
         "url": "{{baseUrl}}/api/orders"
       },

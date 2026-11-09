@@ -18,14 +18,10 @@ test("order retrieval authenticates and scopes the database lookup to the buyer"
       return Response.json(validToken ? { id: buyerId } : { message: "Invalid token" }, { status: validToken ? 200 : 401 });
     }
     databaseReads++;
-    if (url.pathname === "/rest/v1/order_pricing") {
-      assert.equal(url.searchParams.get("order_id"), `eq.${orderId}`);
-      return Response.json([{ order_id: orderId, merchandise_amount: 485000, inspection_fee: 8500, buyer_total: 493500 }]);
-    }
     assert.equal(url.pathname, "/rest/v1/orders");
     assert.equal(url.searchParams.get("id"), `eq.${orderId}`);
     assert.equal(url.searchParams.get("buyer_id"), `eq.${buyerId}`);
-    return Response.json(found ? [{ id: orderId, buyer_id: buyerId, quantity: 1, total_amount: "485000.00" }] : []);
+    return Response.json(found ? [{ id: orderId, buyer_id: buyerId, quantity: 1, subtotal_amount: 485000, verification_option: "none", verification_fee: 0, total_amount: "485000.00" }] : []);
   };
   const call = (token?: string, id = orderId) => GET(new Request("http://localhost/api/orders/" + id, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -65,10 +61,9 @@ test("guest confirmation needs its private cookie and does not expose guest deta
     if (url.pathname.endsWith("/orders")) {
       orderReads++;
       assert.equal(url.searchParams.get("buyer_id"), "is.null");
-      return Response.json([{ id: orderId, buyer_id: null, quantity: 1, total_amount: "493500.00" }]);
+      return Response.json([{ id: orderId, buyer_id: null, quantity: 1, subtotal_amount: 485000, verification_option: "physical", verification_fee: 8500, total_amount: "493500.00" }]);
     }
-    assert.equal(url.pathname, "/rest/v1/order_pricing");
-    return Response.json([]);
+    throw new Error("Unexpected query: " + url.pathname);
   };
   const call = (value?: string) => GET(new Request(`http://localhost/api/orders/${orderId}`, {
     headers: value ? { Cookie: `order_access_${orderId}=${value}` } : {},

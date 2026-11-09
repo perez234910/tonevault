@@ -6,13 +6,12 @@ import dynamic from "next/dynamic";
 
 const BuyerAccount = dynamic(() => import("@/src/components/buyer-account").then(module => module.BuyerAccount), { ssr: false });
 import { useEffect, useState } from "react";
-import type { Order, OrderPricing } from "@/src/types";
+import type { Order } from "@/src/types";
 import { formatPrice } from "@/src/lib/format";
 
 export function OrderConfirmation({ id }: { id: string }) {
   const [showAccount, setShowAccount] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
-  const [pricing, setPricing] = useState<OrderPricing | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState("");
   useEffect(() => {
@@ -25,7 +24,6 @@ export function OrderConfirmation({ id }: { id: string }) {
         if (!response.ok || !result.ok) throw new Error(result.error ?? "Unable to load your order.");
         setError("");
         setOrder(result.data.order);
-        setPricing(result.data.pricing);
       } catch (cause) {
         if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : "Unable to load your order.");
       }
@@ -44,10 +42,8 @@ export function OrderConfirmation({ id }: { id: string }) {
         <div><dt className="text-sm text-muted">Order reference</dt><dd>{order.id}</dd></div>
         <div><dt className="text-sm text-muted">Instrument reference</dt><dd>{order.product_id}</dd></div>
         <div><dt className="text-sm text-muted">Quantity</dt><dd>{order.quantity}</dd></div>
-        {pricing && <>
-          <div><dt className="text-sm text-muted">Guitar subtotal</dt><dd>{formatPrice(Number(pricing.merchandise_amount))}</dd></div>
-          <div><dt className="text-sm text-muted">Physical inspection</dt><dd>{formatPrice(Number(pricing.inspection_fee))} · {pricing.inspection_status.replaceAll("_", " ")}</dd></div>
-        </>}
+        <div><dt className="text-sm text-muted">Guitar subtotal</dt><dd>{formatPrice(Number(order.subtotal_amount))}</dd></div>
+        <div><dt className="text-sm text-muted">Verification service</dt><dd>{order.verification_option} · {formatPrice(Number(order.verification_fee))}</dd></div>
         <div><dt className="text-sm text-muted">Saved total</dt><dd className="text-2xl">{formatPrice(order.total_amount)}</dd></div>
         <div><dt className="text-sm text-muted">Order status</dt><dd>{order.escrow_status}</dd></div>
       </dl>
