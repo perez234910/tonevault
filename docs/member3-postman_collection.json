@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Group 2 Member 3 account checkout",
+    "name": "Group 2 Member 3 GC2 checkout",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Set baseUrl, an available productId and a signed-in buyer Supabase accessToken. Requests use Bearer authentication. Create consumes stock. Separate from Member 1 collection. Optional physical inspection is 8500 PHP; commission is seller-paid at 8%."
+    "description": "Guest checkout is the default: set baseUrl and an available productId, keep cookie jar enabled. Optional account requests may add Bearer accessToken. Create consumes stock. Commission is seller-paid 8%; optional physical inspection is PHP8500."
   },
   "variable": [
     {
@@ -126,15 +126,5 @@
         }
       ]
     }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{accessToken}}",
-        "type": "string"
-      }
-    ]
-  }
+  ]
 }
