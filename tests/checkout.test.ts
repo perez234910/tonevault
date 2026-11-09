@@ -15,6 +15,8 @@ process.env.SUPABASE_SERVICE_ROLE_KEY = "test-only-placeholder";
 
 test("checkout validates shipping, quantity and simulated payment", () => {
   assert.equal(checkoutOrderSchema.safeParse(input).success, true);
+  for (const verification_option of ["none", "remote", "physical"]) assert.equal(checkoutOrderSchema.safeParse({ ...input, verification_option }).success, true);
+  assert.equal(checkoutOrderSchema.safeParse({ ...input, verification_option: "invalid" }).success, false);
   for (const quantity of [0, -3, 1.5, null, undefined]) assert.equal(checkoutOrderSchema.safeParse({ ...input, quantity }).success, false);
   assert.equal(checkoutOrderSchema.safeParse({ ...input, customer: { ...input.customer, email: "invalid" } }).success, false);
   assert.equal(checkoutOrderSchema.safeParse({ ...input, payment_confirmed: false }).success, false);
@@ -23,11 +25,15 @@ test("checkout validates shipping, quantity and simulated payment", () => {
 test("checkout uses verified buyer, ignores browser total and maps stock failures", async () => {
   const original = globalThis.fetch;
   let error: string | null = null;
-  let expectedInspection = false;
-  globalThis.fetch = async (_url, init) => {
+  let expectedVerification = "none";
+  globalThis.fetch = async (url, init) => {
+    if (String(url).includes("/rest/v1/products")) return Response.json([{ id: input.product_id, price: 485000, status: "available", stock: 1 }]);
     const args = JSON.parse(init?.body as string);
     assert.equal(args.p_buyer_id, buyerId);
-    assert.equal(args.p_inspection_requested, expectedInspection);
+    assert.equal(args.p_verification_option, expectedVerification);
+    assert.equal(args.p_commission_amount, 38800);
+    assert.equal(args.p_seller_payout_amount, 446200);
+    assert.equal(args.p_total_amount, expectedVerification === "physical" ? 493500 : 485000);
     assert.equal(args.p_product_id, input.product_id);
     assert.equal(args.total, undefined);
     if (error) return Response.json({ message: error, code: "P0001" }, { status: 400 });
@@ -37,9 +43,9 @@ test("checkout uses verified buyer, ignores browser total and maps stock failure
     const result = await placeCheckoutOrder({ ...input, buyer_id: "forged", total: 1 }, buyerId);
     assert.equal(result.ok, true);
     if (result.ok) assert.equal(result.data.order.total_amount, 485000);
-    expectedInspection = true;
-    assert.equal((await placeCheckoutOrder({ ...input, inspection_requested: true, inspection_fee: 1, commission_rate: 0 }, buyerId)).ok, true);
-    expectedInspection = false;
+    expectedVerification = "physical";
+    assert.equal((await placeCheckoutOrder({ ...input, verification_option: "physical", verification_fee: 1, commission_rate_bps: 0 }, buyerId)).ok, true);
+    expectedVerification = "none";
     for (const [message, code] of [["SLOT_TAKEN", "CONFLICT"], ["INSUFFICIENT_STOCK", "CONFLICT"], ["LISTING_NOT_FOUND", "NOT_FOUND"], ["CANNOT_PURCHASE_OWN_LISTING", "FORBIDDEN"], ["private database details", "INTERNAL_ERROR"]]) {
       error = message;
       const result = await placeCheckoutOrder(input, buyerId);
@@ -67,7 +73,8 @@ test("guest checkout never accepts a browser buyer ID and only stores a token ha
   assert.equal(access.hash, hashOrderAccess(access.token));
   assert.notEqual(access.hash, access.token);
   const original = globalThis.fetch;
-  globalThis.fetch = async (_url, init) => {
+  globalThis.fetch = async (url, init) => {
+    if (String(url).includes("/rest/v1/products")) return Response.json([{ id: input.product_id, price: 485000, status: "available", stock: 1 }]);
     const args = JSON.parse(init?.body as string);
     assert.equal(args.p_buyer_id, null);
     assert.equal(args.p_guest_token_hash, access.hash);

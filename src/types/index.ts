@@ -1,3 +1,7 @@
+import type { VerificationOption } from "@/src/lib/pricing/rules";
+
+export type { VerificationOption } from "@/src/lib/pricing/rules";
+
 export type UserRole = "buyer" | "seller" | "admin" | "luthier";
 
 export type VerificationStatus =
@@ -46,6 +50,14 @@ export type Order = {
   product_id: string;
   buyer_id: string | null;
   quantity: number;
+  unit_price: number;
+  subtotal_amount: number;
+  verification_option: VerificationOption;
+  verification_fee: number;
+  commission_rate_bps: number;
+  commission_amount: number;
+  seller_payout_amount: number;
+  platform_revenue_amount: number;
   total_amount: number;
   escrow_status: EscrowStatus;
   tracking_number: string | null;
@@ -124,15 +136,3 @@ export type CheckoutDetails = {
   address: string;
   payment_method: "simulated_card" | "simulated_gcash";
 };
-
-export type OrderPricing = {
-  order_id: string;
-  merchandise_amount: number;
-  commission_rate: number;
-  inspection_fee: number;
-  inspection_status: "not_requested" | "pending" | "completed";
-  commission_amount: number;
-  seller_proceeds: number;
-  buyer_total: number;
-};
-export type CheckoutPricingRules = { commission_rate: number; physical_inspection_fee: number };
