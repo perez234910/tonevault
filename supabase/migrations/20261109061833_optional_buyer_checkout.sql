@@ -112,4 +112,3 @@ begin
 end; $$;
 revoke all on function public.place_checkout_order(uuid, uuid, integer, text, text, text, text, text, boolean, text) from public, anon, authenticated;
 grant execute on function public.place_checkout_order(uuid, uuid, integer, text, text, text, text, text, boolean, text) to service_role;
-
