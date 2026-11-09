@@ -91,9 +91,9 @@ export interface Database {
     Functions: {
       place_checkout_order: {
         Args: {
-          p_product_id: string; p_buyer_id: string; p_quantity: number;
+          p_product_id: string; p_buyer_id: string | null; p_quantity: number;
           p_full_name: string; p_email: string; p_phone: string;
-          p_address: string; p_payment_method: string; p_inspection_requested?: boolean;
+          p_address: string; p_payment_method: string; p_inspection_requested?: boolean; p_guest_token_hash?: string | null;
         };
         Returns: Order;
       };

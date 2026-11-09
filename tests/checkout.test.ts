@@ -51,11 +51,32 @@ test("checkout uses verified buyer, ignores browser total and maps stock failure
 
 test("POST rejects missing or invalid sessions before writing an order", async () => {
   const request = (token?: string) => new Request("http://localhost/api/orders", {
-    method: "POST", headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(input),
+    method: "POST", headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ product_id: input.product_id, quantity: 1 }),
   });
   assert.equal((await POST(request())).status, 401);
   const original = globalThis.fetch;
   globalThis.fetch = async () => Response.json({ message: "Invalid token" }, { status: 401 });
   try { assert.equal((await POST(request("invalid"))).status, 401); }
   finally { globalThis.fetch = original; }
+});
+
+test("guest checkout never accepts a browser buyer ID and only stores a token hash", async () => {
+  const { createOrderAccess, hashOrderAccess } = await import("../src/lib/catalog/order-access");
+  const access = createOrderAccess();
+  assert.match(access.token, /^[a-f0-9]{64}$/);
+  assert.equal(access.hash, hashOrderAccess(access.token));
+  assert.notEqual(access.hash, access.token);
+  const original = globalThis.fetch;
+  globalThis.fetch = async (_url, init) => {
+    const args = JSON.parse(init?.body as string);
+    assert.equal(args.p_buyer_id, null);
+    assert.equal(args.p_guest_token_hash, access.hash);
+    assert.equal(JSON.stringify(args).includes(access.token), false);
+    return Response.json({ id: buyerId, buyer_id: null, quantity: 1, total_amount: "485000.00" });
+  };
+  try {
+    const saved = await placeCheckoutOrder({ ...input, buyer_id: "forged", total: 1 }, null, access.hash);
+    assert.equal(saved.ok, true);
+    if (saved.ok) assert.equal(saved.data.order.buyer_id, null);
+  } finally { globalThis.fetch = original; }
 });
