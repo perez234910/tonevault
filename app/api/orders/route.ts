@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createOrderAccess } from "@/src/lib/catalog/order-access";
+import { createOrderAccess, GUEST_ORDER_ACCESS_SECONDS } from "@/src/lib/catalog/order-access";
 import { placeCatalogOrder } from "@/src/lib/catalog/queries";
 import { placeCheckoutOrder } from "@/src/lib/catalog/checkout-orders";
 import { createAdminClient } from "@/src/lib/supabase/admin";
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       const response = NextResponse.json(result, { status: 201 });
       response.cookies.set(`order_access_${result.data.order.id}`, access.token, {
         httpOnly: true, sameSite: "strict", secure: new URL(request.url).protocol === "https:",
-        path: `/api/orders/${result.data.order.id}`, maxAge: 60 * 60 * 24 * 7,
+        path: `/api/orders/${result.data.order.id}`, maxAge: GUEST_ORDER_ACCESS_SECONDS,
       });
       response.headers.set("Cache-Control", "private, no-store");
       return response;
