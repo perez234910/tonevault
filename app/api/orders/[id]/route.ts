@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { hashOrderAccess } from "@/src/lib/catalog/order-access";
+import { GUEST_ORDER_ACCESS_SECONDS, hashOrderAccess } from "@/src/lib/catalog/order-access";
 import { createAdminClient } from "@/src/lib/supabase/admin";
 import { productIdSchema } from "@/src/lib/validators/catalog";
 
@@ -29,7 +29,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     let query = supabase.from("orders")
       .select("id, product_id, buyer_id, quantity, unit_price, subtotal_amount, verification_option, verification_fee, commission_rate_bps, commission_amount, seller_payout_amount, platform_revenue_amount, total_amount, escrow_status, tracking_number, created_at")
       .eq("id", id);
-    query = buyerId ? query.eq("buyer_id", buyerId) : query.is("buyer_id", null);
+    if (buyerId) {
+      query = query.eq("buyer_id", buyerId);
+    } else {
+      const cutoff = new Date(Date.now() - GUEST_ORDER_ACCESS_SECONDS * 1000).toISOString();
+      query = query.is("buyer_id", null).gt("created_at", cutoff);
+    }
     const { data: order, error } = await query.maybeSingle();
     if (error) throw error;
     if (!order) return missing();

@@ -50,6 +50,7 @@ test("guest confirmation needs its private cookie and does not expose guest deta
   const token = "a".repeat(64);
   const original = globalThis.fetch;
   let accessAllowed = true;
+  let orderCreatedAt = new Date();
   let orderReads = 0;
   globalThis.fetch = async input => {
     const url = new URL(String(input));
@@ -61,6 +62,10 @@ test("guest confirmation needs its private cookie and does not expose guest deta
     if (url.pathname.endsWith("/orders")) {
       orderReads++;
       assert.equal(url.searchParams.get("buyer_id"), "is.null");
+      const createdAfter = url.searchParams.get("created_at");
+      if (createdAfter?.startsWith("gt.") && orderCreatedAt <= new Date(createdAfter.slice(3))) {
+        return Response.json([]);
+      }
       return Response.json([{ id: orderId, buyer_id: null, quantity: 1, subtotal_amount: 485000, verification_option: "physical", verification_fee: 8500, total_amount: "493500.00" }]);
     }
     throw new Error("Unexpected query: " + url.pathname);
@@ -78,8 +83,11 @@ test("guest confirmation needs its private cookie and does not expose guest deta
     assert.equal(body.includes("guest_token_hash"), false);
     assert.equal(body.includes("email"), false);
     assert.equal(body.includes(token), false);
+    orderCreatedAt = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
+    assert.equal((await call(token)).status, 404);
+    assert.equal(orderReads, 2);
     accessAllowed = false;
     assert.equal((await call(token)).status, 404);
-    assert.equal(orderReads, 1);
+    assert.equal(orderReads, 2);
   } finally { globalThis.fetch = original; }
 });

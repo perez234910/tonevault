@@ -4,9 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 
@@ -30,6 +30,7 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "tonevault-cart";
+const EMPTY_CART: CartItem[] = [];
 
 function readStoredItems(): CartItem[] {
   if (typeof window === "undefined") return [];
@@ -44,32 +45,52 @@ function readStoredItems(): CartItem[] {
   }
 }
 
+function createCartStore() {
+  let items: CartItem[] | undefined;
+  const listeners = new Set<() => void>();
+
+  return {
+    getSnapshot: () => items ?? EMPTY_CART,
+    getServerSnapshot: () => EMPTY_CART,
+    subscribe(listener: () => void) {
+      items ??= readStoredItems();
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    update(change: (current: CartItem[]) => CartItem[]) {
+      items = change(items ?? readStoredItems());
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      } catch {
+        // The cart can still work in this tab when storage is unavailable.
+      }
+      listeners.forEach((listener) => listener());
+    },
+  };
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [store] = useState(createCartStore);
+  const items = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    setItems(readStoredItems());
-  }, []);
-
-  const persist = useCallback((next: CartItem[]) => {
-    setItems(next);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  }, []);
 
   const addItem = useCallback(
     (item: CartItem) => {
-      persist(items.some((existing) => existing.id === item.id) ? items : [...items, item]);
+      store.update((current) =>
+        current.some((existing) => existing.id === item.id) ? current : [...current, item],
+      );
       setIsOpen(true);
     },
-    [items, persist],
+    [store],
   );
 
   const removeItem = useCallback(
     (id: string) => {
-      persist(items.filter((item) => item.id !== id));
+      store.update((current) => current.filter((item) => item.id !== id));
     },
-    [items, persist],
+    [store],
   );
 
   const value = useMemo(

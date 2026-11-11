@@ -64,9 +64,16 @@ export function SiteHeader() {
             </ul>
           )}
           {items.length > 0 ? (
-            <p className="mt-4 border-t border-line pt-3 text-sm text-foreground">
-              Escrow total {formatPrice(total)}
-            </p>
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3 text-sm text-foreground">
+              <p>Escrow total {formatPrice(total)}</p>
+              <Link
+                href="/checkout"
+                onClick={closeCart}
+                className="rounded-full border border-gold px-3 py-1.5 text-gold hover:bg-gold/10"
+              >
+                Checkout
+              </Link>
+            </div>
           ) : null}
         </div>
       ) : null}
