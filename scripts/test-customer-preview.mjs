@@ -31,7 +31,7 @@ async function run(engine, width) {
     const overflow = async () => assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, `${engine}/${width}: horizontal overflow on ${page.url()}`);
     async function shot(name) {
       const capture = (engine === "chromium" && (width === 1440 || width === 390)) || name === "cart";
-      if (capture) await page.screenshot({ path: join(evidence, `${engine}-${width}-${name}.png`), fullPage: true });
+      if (capture) await page.screenshot({ path: join(evidence, `${engine}-${width}-${name}.png`), fullPage: true, caret: "initial" });
     }
     async function count(n) { await page.waitForFunction((expected) => [...document.querySelectorAll('main a[href^="/products/"]')].filter((link) => link.getClientRects().length > 0).length === expected, n); }
     async function qty(n) { await page.waitForFunction((expected) => [...document.querySelectorAll('input[type="number"]')].find((input) => input.getClientRects().length > 0)?.value === String(expected), n); }
@@ -69,9 +69,9 @@ async function run(engine, width) {
     assert.equal(await first.getAttribute("aria-pressed"), "true");
     await decodedImages(); await overflow(); if (width === 1440) await shot("detail");
     await page.getByRole("button", { name: "Add to cart", exact: true }).click();
-    await page.getByRole("link", { name: "Cart, 1 instruments", exact: true }).waitFor();
+    await page.getByRole("button", { name: "Open cart, 1 instruments", exact: true }).waitFor();
     await page.getByRole("button", { name: "Add another", exact: true }).click();
-    await page.getByRole("link", { name: "Cart, 2 instruments", exact: true }).waitFor();
+    await page.getByRole("button", { name: "Open cart, 2 instruments", exact: true }).waitFor();
     await page.getByRole("button", { name: "Buy now", exact: true }).click();
     await page.waitForURL(`${base}/cart`); await qty(2);
     const q = page.getByRole("spinbutton", { name: `Quantity for ${prsTitle}`, exact: true });

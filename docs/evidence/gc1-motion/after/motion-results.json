@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-08",
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "reduced": false,
+      "passed": true,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "pageErrors": [],
+      "consoleErrors": []
+    }
+  ],
+  "note": "Automated actual Chrome and Playwright WebKit. WebKit is not a manually operated Safari or physical-phone test."
+}

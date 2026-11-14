@@ -1,0 +1,12 @@
+Actual Chromium keyboard trace before correction (fresh sample-only browser context):
+Tab 1: A, inside dialog=true
+Tab 2: A, inside dialog=true
+Tab 3: BUTTON, Increase quantity for 2016 PRS Custom 24 in quick cart, inside dialog=true
+Tab 4: BUTTON, Remove 2016 PRS Custom 24 from quick cart, inside dialog=true
+Tab 5: A, inside dialog=true
+Tab 6: BODY, inside dialog=false
+
+The focused motion suite failed its dialog.contains(document.activeElement) assertion.
+Original component: modal-shell-before.txt. Correction is explicit Tab/Shift+Tab first/last wrapping, in addition to the native dialog semantics. Trace transcribed from the observed run; not a fabricated user report.
+
+Additional actual WebKit trace after boundary-only wrapping: focus alternated BODY (outside dialog) and DIALOG on repeated Tabs. The intermediate source is modal-shell-before-webkit.txt. Complete DOM-order cycling is the subsequent correction. No change to Safari keyboard preferences was made.

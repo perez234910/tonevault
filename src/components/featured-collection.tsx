@@ -27,7 +27,7 @@ export async function FeaturedCollection() {
       <div className="mt-8 text-center">
         <Link
           href="/browse"
-          className="inline-flex rounded-full border border-gold/50 px-5 py-2.5 text-sm text-gold-soft hover:border-gold"
+          className="ui-button"
         >
           View the full catalog
         </Link>

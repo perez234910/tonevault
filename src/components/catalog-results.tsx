@@ -23,7 +23,7 @@ export async function CatalogResults({
 
   if (!result.ok) {
     return (
-      <p className="rounded-2xl border border-line bg-panel p-6 text-sm text-muted">
+      <p className="border-y border-line bg-panel p-6 text-sm text-muted">
         Unable to load the catalog: {result.error}
       </p>
     );
@@ -31,7 +31,7 @@ export async function CatalogResults({
 
   if (result.data.products.length === 0) {
     return (
-      <p className="rounded-2xl border border-line bg-panel p-8 text-center text-muted">
+      <p className="border-y border-line bg-panel p-8 text-center text-muted">
         No instruments match these filters.
       </p>
     );

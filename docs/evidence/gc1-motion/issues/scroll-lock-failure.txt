@@ -1,0 +1,19 @@
+Actual local Playwright WebKit run, November 8, 2026 (Asia/Manila).
+Case: width 390, prefers-reduced-motion: reduce.
+Root-only lock: document.documentElement.style.overflow = "hidden".
+The pre-correction root-only source is preserved in modal-shell-before-webkit.txt.
+
+After opening the cart dialog the test sent page.mouse.wheel(0, 500).
+The original scroll position was 747; the next read returned 1247.
+Actual assertion output:
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+1247 !== 747
+    at run (.../scripts/test-ui-motion.mjs:90:44)
+actual: 1247
+expected: 747
+operator: strictEqual
+
+Correction: lock body overflow as well as root overflow, preserving and restoring
+both original values. The final nine-case motion run passed the same wheel test.
+This is automated WebKit evidence, not a physical phone or manual Safari test.

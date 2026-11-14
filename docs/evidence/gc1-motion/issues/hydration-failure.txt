@@ -1,0 +1,6 @@
+Observed in scripts/test-customer-preview.mjs, Chromium, existing populated-cart refresh flow; command exited 1.
+React pageerror: Hydration failed because the server rendered text did not match the client.
+Affected subtree: CartProvider > Suspense > SiteHeader > cart-trigger.
+Server aria-label: Open cart, 0 instruments; client aria-label: Open cart, 2 instruments.
+Server badge text: 0; client badge text: 2.
+Original code preserved in cart-context-before.txt. This is a factual excerpt transcribed from the actual test output, not a manufactured reproduction.

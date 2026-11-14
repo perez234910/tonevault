@@ -53,29 +53,29 @@ export function FilterBar({ brands }: { brands: string[] }) {
   }
 
   const selectClass =
-    "w-full rounded-xl border border-line bg-panel px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold";
+    "ui-control";
 
   return (
     <form
-      className={`grid gap-3 rounded-2xl border border-line bg-panel p-4 sm:grid-cols-2 lg:grid-cols-4 ${
+      className={`grid gap-4 border-y border-line py-5 sm:grid-cols-2 lg:grid-cols-4 ${
         pending ? "opacity-70" : ""
       }`}
       onSubmit={(event) => { event.preventDefault(); update("query", String(new FormData(event.currentTarget).get("query") ?? "").trim()); }}
     >
       <div className="grid gap-3 sm:col-span-2 sm:grid-cols-[minmax(0,1fr)_10rem_auto] lg:col-span-4">
-        <label className="text-[11px] uppercase tracking-[0.18em] text-muted">
+        <label className="ui-eyebrow">
           Search instruments
           <input key={searchParams.get("query") ?? searchParams.get("search") ?? ""} name="query" defaultValue={searchParams.get("query") ?? searchParams.get("search") ?? ""} placeholder="Brand, model or finish" className={`${selectClass} mt-2`} />
         </label>
-        <label className="text-[11px] uppercase tracking-[0.18em] text-muted">
+        <label className="ui-eyebrow">
           Availability
           <select value={searchParams.get("status") ?? "available"} onChange={(event) => update("status", event.target.value)} className={`${selectClass} mt-2`}>
             <option value="available">Available</option><option value="sold">Sold out</option>
           </select>
         </label>
-        <button type="submit" className="self-end rounded-full border border-gold/50 px-5 py-3 text-sm text-gold-soft">Search</button>
+        <button type="submit" className="ui-button self-end">Search</button>
       </div>
-      <label className="block text-[11px] uppercase tracking-[0.18em] text-muted">
+      <label className="block ui-eyebrow">
         Brand
         <select
           className={`${selectClass} mt-2`}
@@ -90,7 +90,7 @@ export function FilterBar({ brands }: { brands: string[] }) {
           ))}
         </select>
       </label>
-      <label className="block text-[11px] uppercase tracking-[0.18em] text-muted">
+      <label className="block ui-eyebrow">
         Price
         <select
           className={`${selectClass} mt-2`}
@@ -107,7 +107,7 @@ export function FilterBar({ brands }: { brands: string[] }) {
           ))}
         </select>
       </label>
-      <label className="block text-[11px] uppercase tracking-[0.18em] text-muted">
+      <label className="block ui-eyebrow">
         Verification
         <select
           className={`${selectClass} mt-2`}
@@ -120,7 +120,7 @@ export function FilterBar({ brands }: { brands: string[] }) {
           <option value="Unverified">Unverified</option>
         </select>
       </label>
-      <label className="block text-[11px] uppercase tracking-[0.18em] text-muted">
+      <label className="block ui-eyebrow">
         Condition
         <select
           className={`${selectClass} mt-2`}
