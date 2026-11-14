@@ -203,3 +203,9 @@ svg { flex-shrink: 0; }
 .empty-panel p { margin-top: 12px; color: var(--muted); font-size: 14px; line-height: 1.8; }
 @media (max-width: 899px) { .checkout-grid { grid-template-columns: minmax(0,1fr); gap: 32px; } .checkout-summary { order: 2; } }
 @media (max-width: 639px) { .page-container { padding: 28px 16px 48px; } .checkout-steps button { font-size: 11px; } }
+.order-progress { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 18px; margin: 40px 0; }
+.order-progress li { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); text-transform: capitalize; font-size: 12px; }
+.order-progress li[aria-current="step"] { color: var(--accent); border-color: var(--accent); }
+.status-point { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 50%; font-variant-numeric: tabular-nums; }
+.status-point--reached { color: #fff; background: var(--accent); border-color: var(--accent); }
+@media (max-width: 767px) { .order-progress { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; } }

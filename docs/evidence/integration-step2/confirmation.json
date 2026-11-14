@@ -1,0 +1,101 @@
+{
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        404
+      ],
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        404
+      ],
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        404
+      ],
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        404
+      ],
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        404
+      ],
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        404
+      ],
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        404
+      ],
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        404
+      ],
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    }
+  ],
+  "note": "Actual current-app behavior only. No API responses intercepted, orders created, private records read, or successful transactions simulated. Guest/account adapter contracts are separate isolated unit tests; backend integration remains pending."
+}
