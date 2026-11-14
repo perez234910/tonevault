@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { StoreSelect } from "./ui/select";
 
 const PRICE_RANGES = [
   { label: "Any price", value: "" },
@@ -52,88 +53,18 @@ export function FilterBar({ brands }: { brands: string[] }) {
     });
   }
 
-  const selectClass =
-    "ui-control";
-
-  return (
-    <form
-      className={`grid gap-4 border-y border-line py-5 sm:grid-cols-2 lg:grid-cols-4 ${
-        pending ? "opacity-70" : ""
-      }`}
-      onSubmit={(event) => { event.preventDefault(); update("query", String(new FormData(event.currentTarget).get("query") ?? "").trim()); }}
-    >
-      <div className="grid gap-3 sm:col-span-2 sm:grid-cols-[minmax(0,1fr)_10rem_auto] lg:col-span-4">
-        <label className="ui-eyebrow">
-          Search instruments
-          <input key={searchParams.get("query") ?? searchParams.get("search") ?? ""} name="query" defaultValue={searchParams.get("query") ?? searchParams.get("search") ?? ""} placeholder="Brand, model or finish" className={`${selectClass} mt-2`} />
-        </label>
-        <label className="ui-eyebrow">
-          Availability
-          <select value={searchParams.get("status") ?? "available"} onChange={(event) => update("status", event.target.value)} className={`${selectClass} mt-2`}>
-            <option value="available">Available</option><option value="sold">Sold out</option>
-          </select>
-        </label>
-        <button type="submit" className="ui-button self-end">Search</button>
-      </div>
-      <label className="block ui-eyebrow">
-        Brand
-        <select
-          className={`${selectClass} mt-2`}
-          value={searchParams.get("brand") ?? ""}
-          onChange={(event) => update("brand", event.target.value)}
-        >
-          <option value="">All brands</option>
-          {brands.map((brand) => (
-            <option key={brand} value={brand}>
-              {brand}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="block ui-eyebrow">
-        Price
-        <select
-          className={`${selectClass} mt-2`}
-          value={currentPriceValue(
-            searchParams.get("minPrice") ?? undefined,
-            searchParams.get("maxPrice") ?? undefined,
-          )}
-          onChange={(event) => update("price", event.target.value)}
-        >
-          {PRICE_RANGES.map((range) => (
-            <option key={range.label} value={range.value}>
-              {range.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="block ui-eyebrow">
-        Verification
-        <select
-          className={`${selectClass} mt-2`}
-          value={searchParams.get("verificationStatus") ?? ""}
-          onChange={(event) => update("verificationStatus", event.target.value)}
-        >
-          <option value="">All statuses</option>
-          <option value="Fully Verified">Fully Verified</option>
-          <option value="Remote Verified">Remote Verified</option>
-          <option value="Unverified">Unverified</option>
-        </select>
-      </label>
-      <label className="block ui-eyebrow">
-        Condition
-        <select
-          className={`${selectClass} mt-2`}
-          value={searchParams.get("condition") ?? ""}
-          onChange={(event) => update("condition", event.target.value)}
-        >
-          {CONDITIONS.map((condition) => (
-            <option key={condition.label} value={condition.value}>
-              {condition.label}
-            </option>
-          ))}
-        </select>
-      </label>
-    </form>
-  );
+  return <form className="store-filters" aria-label="Filter instruments" aria-busy={pending}
+    onSubmit={(event) => { event.preventDefault(); update("query", String(new FormData(event.currentTarget).get("query") ?? "").trim()); }}>
+    <div className="store-filter-search"><label htmlFor="catalog-search" className="sr-only">Search instruments</label>
+      <input id="catalog-search" key={searchParams.get("query") ?? searchParams.get("search") ?? ""} name="query" defaultValue={searchParams.get("query") ?? searchParams.get("search") ?? ""} placeholder="Brand, model or finish" className="ui-control" />
+      <button type="submit" className="ui-button" disabled={pending}>Search</button></div>
+    <div className="store-filter-options">
+      <StoreSelect label="Brand" value={searchParams.get("brand") ?? ""} onChange={(value) => update("brand", value)} disabled={pending} options={[{value:"",label:"All brands"},...brands.map((brand) => ({value:brand,label:brand}))]} />
+      <StoreSelect label="Price" value={currentPriceValue(searchParams.get("minPrice") ?? undefined, searchParams.get("maxPrice") ?? undefined)} onChange={(value) => update("price", value)} disabled={pending} options={PRICE_RANGES} />
+      <StoreSelect label="Verification" value={searchParams.get("verificationStatus") ?? ""} onChange={(value) => update("verificationStatus", value)} disabled={pending} options={[{value:"",label:"All verification"},...['Fully Verified','Remote Verified','Unverified'].map((value) => ({value,label:value}))]} />
+      <StoreSelect label="Condition" value={searchParams.get("condition") ?? ""} onChange={(value) => update("condition", value)} disabled={pending} options={CONDITIONS} />
+      <StoreSelect label="Availability" value={searchParams.get("status") ?? "available"} onChange={(value) => update("status", value)} disabled={pending} options={[{value:"available",label:"Available"},{value:"sold",label:"Sold out"}]} />
+    </div>
+    {pending ? <span role="status" className="sr-only">Updating instruments…</span> : null}
+  </form>;
 }

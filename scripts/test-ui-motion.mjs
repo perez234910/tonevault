@@ -7,7 +7,7 @@ const evidence = resolve(process.env.TONEVAULT_MOTION_EVIDENCE || "docs/evidence
 await mkdir(evidence, { recursive: true });
 const results = [];
 const engines = (process.env.TONEVAULT_TEST_ENGINES || "chromium,webkit").split(",");
-const base = "http://localhost:3000";
+const base = process.env.TONEVAULT_TEST_BASE || "http://localhost:3000";
 const title = "2016 PRS Custom 24";
 const productPath = "/products/20000000-0000-4000-8000-000000000005";
 const wait = (page, predicate, arg) => page.waitForFunction(predicate, arg);
@@ -39,12 +39,12 @@ async function run(engine, width, reduced = false) {
     await noOverflow(); await shot("browse");
     if (width >= 1024) {
       const nav = page.getByRole("navigation", { name: "Main navigation", exact: true });
-      const surface = page.locator('[data-testid="nav-hover-surface"]');
-      await nav.getByRole("link", { name: "Verified", exact: true }).hover();
-      await wait(page, () => Math.abs(new DOMMatrixReadOnly(getComputedStyle(document.querySelector('[data-testid="nav-hover-surface"]')).transform).m41 - 96) < .5);
-      assert.ok(Math.abs(await surface.evaluate((node) => node.getBoundingClientRect().width) - 96) < .5);
-      assert.equal(await nav.getByRole("link", { name: "Browse", exact: true }).getAttribute("aria-current"), "page");
-      assert.equal(await surface.evaluate((node) => getComputedStyle(node).transitionProperty.includes("transform")), !reduced);
+      assert.equal(await page.locator('[data-testid="nav-hover-surface"]').count(), 0);
+      const browse = nav.getByRole("link", {name:"Browse",exact:true});
+      const beforeHover = await browse.evaluate((node) => ({transform:getComputedStyle(node).transform,background:getComputedStyle(node).backgroundColor}));
+      await browse.hover();
+      assert.deepEqual(await browse.evaluate((node) => ({transform:getComputedStyle(node).transform,background:getComputedStyle(node).backgroundColor})), beforeHover);
+      assert.equal(await browse.getAttribute("aria-current"), "page");
       const collection = nav.getByRole("button", { name: "Collection", exact: true });
       await collection.focus(); await page.keyboard.press("ArrowDown");
       const popover = page.getByRole("region", { name: "Collection links", exact: true }); await popover.waitFor();
@@ -67,7 +67,20 @@ async function run(engine, width, reduced = false) {
       await openMenu.tap(); await menu.getByRole("link", { name: "Verified", exact: true }).tap(); await closed(); await page.waitForURL(/verificationStatus=/);
     }
 
+    // Synthetic two-view fixture exercises gallery keyboard/motion, not extra claimed listing photos.
+    // Two distinct, existing local files without query strings (Next Image rejects unconfigured local queries).
+    // The /preview image is a documented illustration (public/preview/README.md), not a photo of this listing.
+    const galleryFixture = ["/guitars/prs-custom24.jpg", "/preview/guitar-7-detail.jpg"];
+    await page.route(`**/api/products/${productPath.split('/').at(-1)}`, async (route) => {
+      const response = await route.fetch(); const body = await response.json();
+      assert.equal(response.status(), 200, "Synthetic gallery requires a successful underlying sample detail response");
+      assert.equal(body.data?.model, "Custom 24");
+      body.data.images = galleryFixture;
+      await route.fulfill({json:body});
+    });
     await page.goto(`${base}${productPath}`); await page.getByRole("heading", { name: title, exact: true }).waitFor();
+    const gallerySources = await page.locator(".gallery-image").evaluateAll((images) => images.map((image) => new URL(image.currentSrc || image.src, location.href).searchParams.get("url")));
+    assert.deepEqual(gallerySources, galleryFixture, "Gallery must render both distinct fixture images");
     await page.getByRole("button", { name: `Show photo 1 of ${title}`, exact: true }).focus();
     await page.keyboard.press("ArrowRight");
     const thumbnail = page.getByRole("button", { name: `Show photo 2 of ${title}`, exact: true }); assert.equal(await thumbnail.getAttribute("aria-pressed"), "true");

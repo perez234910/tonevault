@@ -4,7 +4,7 @@ import { resolve, join } from "node:path";
 
 // Optional external test tooling; no Playwright dependency is added to the app.
 const browsers = await import(process.env.TONEVAULT_PLAYWRIGHT_MODULE || "playwright");
-const base = "http://localhost:3000";
+const base = process.env.TONEVAULT_TEST_BASE || "http://localhost:3000";
 const evidence = resolve(process.env.TONEVAULT_EVIDENCE_DIR || "docs/evidence/local-preview");
 await mkdir(evidence, { recursive: true });
 const results = [];
@@ -33,6 +33,11 @@ async function run(engine, width) {
       const capture = (engine === "chromium" && (width === 1440 || width === 390)) || name === "cart";
       if (capture) await page.screenshot({ path: join(evidence, `${engine}-${width}-${name}.png`), fullPage: true, caret: "initial" });
     }
+    async function choose(label, option) {
+      const trigger = page.getByRole("combobox", {name:label,exact:true});
+      await trigger.click(); await page.getByRole("option", {name:option,exact:true}).click();
+      await page.waitForFunction((name) => ![...document.querySelectorAll('[role="combobox"]')].find((node) => node.getAttribute('aria-label') === name)?.disabled, label);
+    }
     async function count(n) { await page.waitForFunction((expected) => [...document.querySelectorAll('main a[href^="/products/"]')].filter((link) => link.getClientRects().length > 0).length === expected, n); }
     async function qty(n) { await page.waitForFunction((expected) => [...document.querySelectorAll('input[type="number"]')].find((input) => input.getClientRects().length > 0)?.value === String(expected), n); }
     async function decodedImages() {
@@ -47,12 +52,12 @@ async function run(engine, width) {
     await decodedImages(); await overflow(); if (width === 1440) await shot("home");
     await page.getByRole("link", { name: "Browse the vault", exact: true }).click();
     await count(7); await decodedImages(); await overflow(); if (width === 1440) await shot("browse");
-    await page.getByRole("combobox", { name: "Brand", exact: true }).selectOption("PRS"); await count(1);
-    await page.getByRole("combobox", { name: "Price", exact: true }).selectOption("0-250000"); await count(1);
-    await page.getByRole("combobox", { name: "Verification", exact: true }).selectOption("Unverified"); await count(1);
-    await page.getByRole("combobox", { name: "Condition", exact: true }).selectOption("checking");
+    await choose("Brand", "PRS"); await count(1);
+    await choose("Price", "Under ₱250,000"); await count(1);
+    await choose("Verification", "Unverified"); await count(1);
+    await choose("Condition", "Checking / playwear");
     await page.getByText("No instruments match these filters.", { exact: true }).waitFor();
-    await page.getByRole("combobox", { name: "Condition", exact: true }).selectOption(""); await count(1);
+    await choose("Condition", "Any condition"); await count(1);
     await page.getByRole("textbox", { name: "Search instruments" }).fill("no-such-guitar");
     await page.getByRole("button", { name: "Search", exact: true }).click();
     await page.getByText("No instruments match these filters.", { exact: true }).waitFor();
@@ -60,13 +65,7 @@ async function run(engine, width) {
     await page.getByRole("button", { name: "Search", exact: true }).click(); await count(1);
     await page.locator('main a[href^="/products/"]:visible').click();
     await page.getByRole("heading", { name: prsTitle, exact: true }).waitFor();
-    const first = page.getByRole("button", { name: `Show photo 1 of ${prsTitle}`, exact: true });
-    const second = page.getByRole("button", { name: `Show photo 2 of ${prsTitle}`, exact: true });
-    await first.focus(); await page.keyboard.press("ArrowRight"); assert.equal(await second.getAttribute("aria-pressed"), "true");
-    await page.keyboard.press("Home"); assert.equal(await first.getAttribute("aria-pressed"), "true");
-    await page.keyboard.press("End"); assert.equal(await second.getAttribute("aria-pressed"), "true");
-    await page.getByRole("button", { name: "Next photograph", exact: true }).click();
-    assert.equal(await first.getAttribute("aria-pressed"), "true");
+    await page.getByText("Model reference only; not a photograph of this vintage listing or verification evidence.", {exact:true}).waitFor();
     await decodedImages(); await overflow(); if (width === 1440) await shot("detail");
     await page.getByRole("button", { name: "Add to cart", exact: true }).click();
     await page.getByRole("button", { name: "Open cart, 1 instruments", exact: true }).waitFor();
@@ -93,7 +92,7 @@ async function run(engine, width) {
     await page.getByRole("heading", { name: "Your cart is empty", exact: true }).waitFor();
     await overflow(); if (width === 390) await shot("empty-cart");
     await page.getByRole("link", { name: "Continue shopping", exact: true }).click();
-    await page.getByRole("combobox", { name: "Availability", exact: true }).selectOption("sold"); await count(1);
+    await choose("Availability", "Sold out"); await count(1);
     await page.locator('main a[href^="/products/"]:visible').click();
     await page.getByRole("heading", { name: "1961 Gibson SG Standard", exact: true }).waitFor();
     assert.equal(await page.getByRole("button", { name: "Buy now", exact: true }).isDisabled(), true);
@@ -123,14 +122,14 @@ async function run(engine, width) {
       assert.equal(await page.getByRole("button", { name: "Retry instrument", exact: true }).count(), 0);
       await page.route(endpoint, async (route) => { const original = await route.fetch(); const body = await original.json(); body.data.images = []; await route.fulfill({ json: body }); });
       await page.goto(`${base}/products/${id(1)}`); await page.getByText("No photography on file", { exact: true }).waitFor(); await page.unroute(endpoint);
-      await page.route(endpoint, async (route) => { const original = await route.fetch(); const body = await original.json(); body.data.images = ["/preview/nonexistent-browser-test.jpg"]; await route.fulfill({ json: body }); });
+      await page.route(endpoint, async (route) => { const original = await route.fetch(); const body = await original.json(); body.data.images = ["/guitars/nonexistent-browser-test.jpg"]; await route.fulfill({ json: body }); });
       await page.goto(`${base}/products/${id(1)}`); await page.getByRole("img", { name: "Photograph 1 unavailable", exact: true }).waitFor(); await page.unroute(endpoint);
       const blocked = await context.request.post(`${base}/api/orders`, { data: { product_id: id(1), buyer_id: "20000000-0000-4000-8000-0000000000a1", quantity: 1 } });
       assert.equal(blocked.status(), 403); assert.match((await blocked.json()).error, /read-only/);
       assert.deepEqual(pageErrors, []);
     }
     results.push({ engine, width, passed: true, mainFlowPageErrors: pageErrors, mainFlowConsoleErrors: consoleErrors, negativeStatesTested: engine === "chromium" && width === 1440 });
-    console.log(`PASS ${engine} ${width}px: Home/Browse/Detail/Cart; search/filters; gallery keyboard; Buy Now; quantity bounds/invalid edits; totals; refresh; remove/clear/empty; sold-out; image decoding; no overflow or unexpected main-flow errors.`);
+    console.log(`PASS ${engine} ${width}px: Home/Browse/Detail/Cart; search/filters; model reference gallery; Buy Now; quantity bounds/invalid edits; totals; refresh; remove/clear/empty; sold-out; image decoding; no overflow or unexpected main-flow errors.`);
     await context.close();
   } finally { await browser.close(); }
 }

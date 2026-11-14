@@ -21,7 +21,6 @@ export function SiteHeader() {
   const params = useSearchParams();
   const router = useRouter();
   const { totalQuantity, isOpen, openCart, closeCart } = useCart();
-  const [target, setTarget] = useState<number | null>(null);
   const [collectionOpen, setCollectionOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [kind, setKind] = useState<"cart" | "mobile">("cart");
@@ -31,7 +30,6 @@ export function SiteHeader() {
   const modalTrigger = useRef<HTMLButtonElement>(null);
   const verified = pathname === "/browse" && params.get("verificationStatus") === "Fully Verified";
   const active = verified ? 1 : pathname === "/browse" || pathname.startsWith("/products/") ? 0 : null;
-  const surface = target ?? active;
 
   useEffect(() => {
     if (!collectionOpen) return;
@@ -59,16 +57,22 @@ export function SiteHeader() {
       <div className="site-header-row">
         <Link href="/" className="wordmark" aria-label="ToneVault home" onClick={navigate}>tonevault</Link>
         <form role="search" aria-label="Header catalog search" className="header-search" onSubmit={search}><Icon name="search" size={16} /><input name="query" aria-label="Find your next guitar" placeholder="Find your next guitar" /><button type="submit" aria-label="Search catalog" className="flex h-10 items-center"><Icon name="arrow" size={14} /></button></form>
-        <nav aria-label="Main navigation" className="desktop-nav" onPointerLeave={(event) => { const focused = event.currentTarget.querySelector<HTMLElement>(".nav-item:focus"); setTarget(focused ? Number(focused.dataset.navIndex) : null); }} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setTarget(null); }}>
-          <span aria-hidden="true" data-testid="nav-hover-surface" className="nav-surface" style={{ transform: `translateX(${(surface ?? 0) * 100}%)`, opacity: surface === null ? 0 : 1 }} />
-          <Link href="/browse" aria-current={active === 0 ? "page" : undefined} className="nav-item" data-nav-index="0" onPointerEnter={() => setTarget(0)} onFocus={() => setTarget(0)} onClick={navigate}>Browse</Link>
-          <Link href="/browse?verificationStatus=Fully%20Verified" aria-current={verified ? "page" : undefined} className="nav-item" data-nav-index="1" onPointerEnter={() => setTarget(1)} onFocus={() => setTarget(1)} onClick={navigate}>Verified</Link>
+        <nav aria-label="Main navigation" className="desktop-nav">
+          <Link href="/browse" aria-current={active === 0 ? "page" : undefined} className="nav-item" onClick={navigate}>Browse</Link>
+          <Link href="/browse?verificationStatus=Fully%20Verified" aria-current={verified ? "page" : undefined} className="nav-item" onClick={navigate}>Verified</Link>
           <div ref={collection} className="nav-dropdown-shell" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setCollectionOpen(false); }}>
-            <button ref={trigger} type="button" className="nav-item" data-nav-index="2" aria-expanded={collectionOpen} aria-controls="collection-popover" onPointerEnter={() => setTarget(2)} onFocus={() => setTarget(2)} onClick={() => setCollectionOpen((value) => !value)} onKeyDown={(event) => {
+            <button ref={trigger} type="button" className="nav-item" aria-expanded={collectionOpen} aria-controls="collection-popover" onClick={() => setCollectionOpen((value) => !value)} onKeyDown={(event) => {
               if (event.key === "ArrowDown") { event.preventDefault(); setCollectionOpen(true); requestAnimationFrame(() => collection.current?.querySelector<HTMLAnchorElement>("a")?.focus()); }
             }}>Collection <Icon name="chevron" size={12} className="nav-chevron" /></button>
-            <div id="collection-popover" role="region" aria-label="Collection links" className="nav-popover" data-open={collectionOpen} aria-hidden={!collectionOpen} inert={!collectionOpen}>
-              {collectionLinks.map((link) => <Link key={link.href} href={link.href} onClick={navigate}>{link.label}<Icon name="arrow" size={14} /></Link>)}
+            <div id="collection-popover" role="region" aria-label="Collection links" className="nav-popover" onKeyDown={(event) => {
+              if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+              event.preventDefault();
+              const links = Array.from(event.currentTarget.querySelectorAll<HTMLAnchorElement>("a"));
+              const current = links.indexOf(document.activeElement as HTMLAnchorElement);
+              const next = event.key === "Home" ? 0 : event.key === "End" ? links.length - 1 : (current + (event.key === "ArrowUp" ? -1 : 1) + links.length) % links.length;
+              links[next]?.focus();
+            }} data-open={collectionOpen} aria-hidden={!collectionOpen} inert={!collectionOpen}>
+              {collectionLinks.map((link) => <Link key={link.href} href={link.href} aria-current={link.href === `${pathname}${params.size ? `?${params.toString()}` : ""}` ? "page" : undefined} onClick={navigate}>{link.label}<Icon name="arrow" size={14} /></Link>)}
             </div>
           </div>
         </nav>
@@ -83,7 +87,7 @@ export function SiteHeader() {
         <div className="drawer-heading"><h2 id="mobile-nav-title">Explore ToneVault</h2><button autoFocus type="button" className="ui-icon-button" aria-label="Close navigation" onClick={dismiss}><Icon name="close" /></button></div>
         <div className="drawer-content"><form role="search" aria-label="Mobile catalog search" className="mb-5" onSubmit={search}><label className="ui-eyebrow" htmlFor="mobile-search">Find your next guitar</label><div className="mt-3 flex gap-2"><input id="mobile-search" name="query" className="ui-control" placeholder="Brand, model or finish" /><button type="submit" className="ui-icon-button" aria-label="Search catalog"><Icon name="search" size={18} /></button></div></form>
           <nav aria-label="Mobile navigation"><Link href="/browse" className="mobile-nav-link" aria-current={active === 0 ? "page" : undefined} onClick={navigate}>Browse <Icon name="arrow" /></Link><Link href="/browse?verificationStatus=Fully%20Verified" className="mobile-nav-link" aria-current={verified ? "page" : undefined} onClick={navigate}>Verified <Icon name="arrow" /></Link><Link href="/cart" className="mobile-nav-link" aria-current={pathname === "/cart" ? "page" : undefined} onClick={navigate}>Your cart <Icon name="bag" /></Link></nav>
-          <p className="ui-eyebrow mb-2 mt-10">By maker</p>{collectionLinks.slice(1,4).map((link) => <Link key={link.href} href={link.href} className="block py-3 text-sm text-muted" onClick={navigate}>{link.label}</Link>)}
+          <p className="mt-8 mb-2 text-xs text-muted">By maker</p>{collectionLinks.slice(1,4).map((link) => <Link key={link.href} href={link.href} className="block py-3 text-sm text-muted" onClick={navigate}>{link.label}</Link>)}
         </div><div className="drawer-footer text-xs leading-6 text-muted">Pre-owned instruments. Thoughtful decisions.<br />Demo checkout; no real payment.</div>
       </>}
     </ModalShell>

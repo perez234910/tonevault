@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+import { InstrumentImage } from "./instrument-image";
+import { cartPhotograph, isModelReference } from "@/src/lib/catalog-photography";
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "./cart-context";
@@ -13,11 +14,11 @@ export function QuickCart({ onDismiss, onNavigate }: { onDismiss: () => void; on
   const { items, setQuantity, removeItem, subtotal, totalQuantity } = useCart();
   const [notice, setNotice] = useState("");
   return <>
-    <div className="drawer-heading"><div><p className="ui-eyebrow mb-2">Your selection</p><h2 id="quick-cart-title">Your cart <span className="text-sm text-muted">({totalQuantity})</span></h2></div><button autoFocus type="button" className="ui-icon-button" aria-label="Close cart preview" onClick={onDismiss}><Icon name="close" /></button></div>
+    <div className="drawer-heading"><div><h2 id="quick-cart-title">Your cart <span className="text-sm text-muted">({totalQuantity})</span></h2></div><button autoFocus type="button" className="ui-icon-button" aria-label="Close cart preview" onClick={onDismiss}><Icon name="close" /></button></div>
     <div className="drawer-content">
       <p role="status" className="min-h-5 text-xs leading-5 text-accent">{notice}</p>
       {items.length ? <ul>{items.map((item) => <li key={item.id} className="drawer-line">
-        <Link href={`/products/${encodeURIComponent(item.id)}`} onClick={onNavigate} className="relative aspect-[4/5] self-start bg-panel-2">{item.image ? <Image src={item.image} alt={item.title} fill sizes="76px" className="object-cover" /> : null}</Link>
+        <Link href={`/products/${encodeURIComponent(item.id)}`} onClick={onNavigate} className="relative aspect-[4/5] self-start bg-panel-2"><InstrumentImage src={cartPhotograph(item)} alt={item.title} sizes="76px" reference={isModelReference(cartPhotograph(item))} /></Link>
         <div className="min-w-0"><h3><Link href={`/products/${encodeURIComponent(item.id)}`} onClick={onNavigate}>{item.title}</Link></h3><p className="mt-1 text-xs text-muted">{item.finish}</p>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3"><div className="cart-quantity">
             <button type="button" aria-label={`Decrease quantity for ${item.title} in quick cart`} disabled={item.quantity <= 1} onClick={() => setQuantity(item.id, item.quantity - 1)}>−</button>

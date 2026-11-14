@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { Icon } from "./ui/icon";
 
-export function ProductGallery({ images, alt }: { images: string[]; alt: string }) {
+export function ProductGallery({ images, alt, reference = false }: { images: string[]; alt: string; reference?: boolean }) {
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(0);
   const [loaded, setLoaded] = useState<number[]>([]);
@@ -20,7 +20,7 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
   return <section aria-label="Instrument photographs" className="min-w-0 space-y-4">
     <div className="gallery-frame" aria-busy={pending}>
       {images.map((image, index) => failed.includes(index) ? (visible === index ? <div key={`${image}-${index}`} role="img" aria-label={`Photograph ${index + 1} unavailable`} className="gallery-fallback">This photograph is unavailable. Try another view.</div> : null) : (
-        <Image key={`${image}-${index}`} src={image} alt={index === active ? `${alt}, photo ${index + 1} of ${images.length}` : ""} aria-hidden={index !== active} fill priority={index === 0} sizes="(min-width: 1280px) 576px, (min-width: 1024px) 50vw, 100vw" className="gallery-image" data-visible={index === visible && loaded.includes(index)}
+        <Image key={`${image}-${index}`} src={image} alt={index === active ? `${alt}, photo ${index + 1} of ${images.length}` : ""} aria-hidden={index !== active} fill priority={index === 0} sizes="(min-width: 1280px) 576px, (min-width: 1024px) 50vw, 100vw" className={`gallery-image ${reference ? "!object-contain p-5" : ""}`} data-visible={index === visible && loaded.includes(index)}
           onLoad={() => { setLoaded((previous) => previous.includes(index) ? previous : [...previous, index]); if (index === active) setVisible(index); }}
           onError={() => { setFailed((previous) => previous.includes(index) ? previous : [...previous, index]); if (index === active) setVisible(index); }} />
       ))}
@@ -38,8 +38,8 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
         if (event.key === "Home") next = 0;
         if (event.key === "End") next = images.length - 1;
         if (next !== undefined) { event.preventDefault(); select(next, true); }
-      }} className="gallery-thumbnail"><Image src={image} alt="" fill sizes="72px" className="object-cover" /></button>)}
+      }} className="gallery-thumbnail"><Image src={image} alt="" fill sizes="72px" className={reference ? "object-contain" : "object-cover"} /></button>)}
     </div> : null}
-    <p className="text-[10px] leading-5 text-muted">Illustrative photography. Refer to the listing notes for documented condition.</p>
+    <p className="text-[10px] leading-5 text-muted">{reference ? "Model reference only; not a photograph of this vintage listing or verification evidence." : "Refer to listing notes for documented condition."}</p>
   </section>;
 }

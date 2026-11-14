@@ -8,6 +8,7 @@ import { ScoreBadge, VerificationBadge } from "@/src/components/verification-bad
 import { instrumentTitle } from "@/src/lib/format";
 import { fetchProductDetail, ProductLoadError } from "@/src/lib/product-detail-client";
 import { Icon } from "./ui/icon";
+import { productPhotography } from "@/src/lib/catalog-photography";
 import type { ProductDetail as ProductData } from "@/src/types";
 
 function inspectionCopy(level: "none" | "remote" | "in_person") {
@@ -54,18 +55,18 @@ export function ProductDetailView({ id }: { id: string }) {
   );
   const product = state.product;
   const title = instrumentTitle(product);
+  const photography = productPhotography(product);
   const sellerSince = product.seller
     ? new Date(product.seller.created_at).getFullYear()
     : null;
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-7 sm:px-6"><Link href="/browse" className="ui-link mb-7 text-muted"><Icon name="arrow" size={14} style={{ transform: "rotate(180deg)" }} />Back to collection</Link><div className="grid items-start gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-      <ProductGallery key={product.id} images={product.images} alt={title} />
+      <ProductGallery key={product.id} images={photography.images} alt={title} reference={photography.reference} />
 
       <div className="min-w-0">
         <div>
-          <p className="ui-eyebrow">{product.brand}</p>
-          <h1 className="mt-3 text-4xl leading-[1.1] text-foreground sm:text-[2.7rem]">
+          <h1 className="text-4xl leading-[1.1] text-foreground sm:text-[2.7rem]">
             {title}
           </h1>
           <p className="mt-2 text-muted">{product.finish ?? "Finish not recorded"}</p>

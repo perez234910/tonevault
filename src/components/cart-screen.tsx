@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+import { InstrumentImage } from "./instrument-image";
+import { cartPhotograph, isModelReference } from "@/src/lib/catalog-photography";
 import Link from "next/link";
 import { useId, useState } from "react";
 import { useCart } from "./cart-context";
@@ -52,7 +53,7 @@ export function CartScreen() {
   const [notice, setNotice] = useState("");
   return (
     <div data-cart-screen className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-      <p className="ui-eyebrow">Your selection</p>
+
       <h1 className="mt-3 text-4xl text-foreground sm:text-5xl">Your cart</h1>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">Saved on this device. Adding to your cart does not reserve an instrument.</p>
       <p role="status" aria-live="polite" className="mt-2 min-h-5 text-sm text-gold-soft">{notice}</p>
@@ -69,7 +70,7 @@ export function CartScreen() {
               {items.map((item) => (
                 <li key={item.id} className="ui-cart-row grid grid-cols-[5rem_minmax(0,1fr)] gap-x-5 gap-y-5 py-7 sm:grid-cols-[7rem_minmax(0,1fr)]">
                   <Link href={`/products/${encodeURIComponent(item.id)}`} className="relative aspect-[4/5] self-start overflow-hidden rounded-sm bg-panel-2">
-                    {item.image ? <Image src={item.image} alt={item.title} fill sizes="112px" className="object-cover" /> : <span className="flex h-full items-center justify-center p-2 text-center text-xs text-muted">No photo</span>}
+                    <InstrumentImage src={cartPhotograph(item)} alt={item.title} sizes="112px" reference={isModelReference(cartPhotograph(item))} />
                   </Link>
                   <div className="min-w-0">
                     <Link href={`/products/${encodeURIComponent(item.id)}`} className="text-lg font-medium leading-tight text-foreground hover:text-accent sm:text-xl">{item.title}</Link>

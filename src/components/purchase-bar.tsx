@@ -5,6 +5,7 @@ import { Icon } from "./ui/icon";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/src/components/cart-context";
 import { formatPrice, instrumentTitle } from "@/src/lib/format";
+import { productPhotography } from "@/src/lib/catalog-photography";
 import type { Product } from "@/src/types";
 
 export function PurchaseBar({ product }: { product: Product }) {
@@ -22,7 +23,7 @@ export function PurchaseBar({ product }: { product: Product }) {
       id: product.id,
       title,
       price: product.price,
-      image: product.images[0] ?? null,
+      image: productPhotography(product).images[0] ?? null,
       finish: product.finish,
       stock: product.stock,
       status: product.status,
@@ -32,7 +33,7 @@ export function PurchaseBar({ product }: { product: Product }) {
   function addToCart() {
     if (sold) return;
     if (addItem(cartPayload())) {
-      setNotice("Saved in your cart within available stock. Cart items are not reserved; prices and stock are checked at checkout.");
+      setNotice("Added to your cart.");
     }
   }
 
@@ -50,7 +51,6 @@ export function PurchaseBar({ product }: { product: Product }) {
       <div className="flex flex-col gap-3">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="ui-eyebrow">Asking price</p>
             <p className="mt-1 text-3xl tracking-[-.04em] text-foreground">{formatPrice(product.price)}</p>
           </div>
           <p className="text-xs text-muted">{sold ? "No longer available" : "Simulated checkout · no real payment"}</p>

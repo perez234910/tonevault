@@ -1,5 +1,7 @@
 # ToneVault GC1 design and motion system
 
+Current refinement: see [storefront refinement](storefront-refinement.md). The latest user instruction removes the earlier sliding nav surface, simplifies Home/labels and replaces native filters with Radix Select. Historical PR #25 test results remain unchanged.
+
 Source: complete local `agent-instructions/GC1_GROUP 2.pdf`, all 14 pages read; pages 9–14 visually inspected at high resolution. It remains excluded from Git. The mockups define visual identity; planned checkout, seller, payment and escrow features in that document are not claims about working GC2 backend features.
 
 ## GC1 versus previous implementation
