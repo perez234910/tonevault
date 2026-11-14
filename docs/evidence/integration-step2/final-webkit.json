@@ -1,0 +1,49 @@
+{
+  "results": [
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true,
+      "consoleErrors": []
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": false,
+      "consoleErrors": [
+        "/127.0.0.1:3109/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.",
+        "/127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=jrqPsPni7ljHh19F due to access control checks.",
+        "/127.0.0.1:3109/products/5c7b4d20-ebd5-4ff4-886e-750259aeccce?_rsc=jrqPsPni7ljHh19F due to access control checks.",
+        "/127.0.0.1:3109/products/b2ba9952-2b7a-4ad2-b84e-06ef55be7bd9?_rsc=jrqPsPni7ljHh19F due to access control checks.",
+        "/127.0.0.1:3109/products/5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9?_rsc=jrqPsPni7ljHh19F due to access control checks.",
+        "/127.0.0.1:3109/products/f3621316-61d6-4549-9f54-132d7bfc00ad?_rsc=jrqPsPni7ljHh19F due to access control checks.",
+        "/127.0.0.1:3109/products/426f1b1f-4203-4907-8db2-598c1a373d16?_rsc=jrqPsPni7ljHh19F due to access control checks."
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true,
+      "consoleErrors": []
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": false,
+      "consoleErrors": [
+        "/127.0.0.1:3109/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.",
+        "/127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=jrqPsPni7ljHh19F due to access control checks.",
+        "/127.0.0.1:3109/products/5c7b4d20-ebd5-4ff4-886e-750259aeccce?_rsc=jrqPsPni7ljHh19F due to access control checks."
+      ]
+    }
+  ],
+  "note": "Diagnostic completes all WebKit cases. Any console-error case is failed. No order writes or API response interception. Not a manual Safari test."
+}
