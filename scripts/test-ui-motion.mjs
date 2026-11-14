@@ -68,12 +68,19 @@ async function run(engine, width, reduced = false) {
     }
 
     // Synthetic two-view fixture exercises gallery keyboard/motion, not extra claimed listing photos.
+    // Two distinct, existing local files without query strings (Next Image rejects unconfigured local queries).
+    // The /preview image is a documented illustration (public/preview/README.md), not a photo of this listing.
+    const galleryFixture = ["/guitars/prs-custom24.jpg", "/preview/guitar-7-detail.jpg"];
     await page.route(`**/api/products/${productPath.split('/').at(-1)}`, async (route) => {
       const response = await route.fetch(); const body = await response.json();
-      body.data.images = ["/guitars/prs-custom24.jpg", "/guitars/prs-custom24.jpg?gallery-test=2"];
+      assert.equal(response.status(), 200, "Synthetic gallery requires a successful underlying sample detail response");
+      assert.equal(body.data?.model, "Custom 24");
+      body.data.images = galleryFixture;
       await route.fulfill({json:body});
     });
     await page.goto(`${base}${productPath}`); await page.getByRole("heading", { name: title, exact: true }).waitFor();
+    const gallerySources = await page.locator(".gallery-image").evaluateAll((images) => images.map((image) => new URL(image.currentSrc || image.src, location.href).searchParams.get("url")));
+    assert.deepEqual(gallerySources, galleryFixture, "Gallery must render both distinct fixture images");
     await page.getByRole("button", { name: `Show photo 1 of ${title}`, exact: true }).focus();
     await page.keyboard.press("ArrowRight");
     const thumbnail = page.getByRole("button", { name: `Show photo 2 of ${title}`, exact: true }); assert.equal(await thumbnail.getAttribute("aria-pressed"), "true");
