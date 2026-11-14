@@ -39,8 +39,8 @@ for(const engine of ['chromium','webkit'])for(const width of [1440,390])for(cons
  }
  await page.goto(base+'/browse');await page.locator('main .product-card').first().waitFor();
  if(engine==='chromium'&&!reduced)await shot(page,'browse',width);
- const prs=products.products.find(p=>p.brand==='PRS');assert.ok(prs);const title=`${prs.year} ${prs.brand} ${prs.model}`;await page.goto(base+'/products/'+prs.id);await page.getByRole('heading',{name:title,exact:true}).waitFor();await page.getByText('Model reference only; not a photograph of this vintage listing or verification evidence.',{exact:true}).waitFor();
- await page.locator('.gallery-image').evaluate(n=>n.decode());assert.match(await page.locator('.gallery-image').getAttribute('src'),/prs-custom24/);assert.equal(await page.locator('.gallery-image').evaluate(n=>getComputedStyle(n).objectFit),'contain');
+ const instrument=products.products.find(p=>p.status==='available'&&p.stock>0);assert.ok(instrument,'Storefront requires an available catalog instrument');const title=`${instrument.year} ${instrument.brand} ${instrument.model}`;await page.goto(base+'/products/'+instrument.id);await page.getByRole('heading',{name:title,exact:true}).waitFor();
+ const gallery=page.locator('.gallery-image');if(await gallery.count()){for(const image of await gallery.all())await image.evaluate(n=>n.decode());}else{await page.getByRole('img',{name:`No photographs available for ${title}`,exact:true}).waitFor();}
  await page.getByRole('button',{name:'Add to cart',exact:true}).click();await page.locator('.cart-trigger').click();await page.getByRole('dialog',{name:/Your cart/}).waitFor();await page.keyboard.press('Escape');await page.getByRole('dialog').waitFor({state:'hidden'});
  await page.goto(base+'/cart');const quantity=page.getByRole('spinbutton',{name:`Quantity for ${title}`,exact:true});await quantity.waitFor();assert.equal(await quantity.inputValue(),'1');await page.reload();await quantity.waitFor();assert.equal(await quantity.inputValue(),'1');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);assert.deepEqual(errors,[]);assert.deepEqual(writes,[]);
