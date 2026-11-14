@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     template: "%s · ToneVault",
   },
   description:
-    "High-end pre-owned and vintage guitars with standardized grading and escrow protection.",
+    "Explore pre-owned and vintage guitars with condition notes and verification labels. Course prototype with simulated checkout.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
