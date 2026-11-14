@@ -78,7 +78,9 @@ export function addCartItem(items: CartItem[], product: CartProduct): CartItem[]
   if (product.status !== "available" || !validQuantity(product.stock)) return items;
   const existing = items.find((item) => item.id === product.id);
   const item = parseItem({ ...product, quantity: (existing?.quantity ?? 0) + 1 });
-  if (!item) return items;
+  // At the stock limit, clamping returns the same quantity. Report that as "not added"
+  // (same array) instead of a successful addition.
+  if (!item || (existing && item.quantity <= existing.quantity)) return items;
   return existing
     ? items.map((current) => current.id === item.id ? item : current)
     : [...items, item];
