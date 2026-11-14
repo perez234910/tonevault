@@ -1,0 +1,67 @@
+{
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "passed": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   '/127.0.0.1:3109/?_rsc=jrqPsPni7ljHh19F due to access control checks.'\n+ ]\n- []\n"
+      }
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "passed": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   '/127.0.0.1:3109/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.',\n+   '/127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',\n+   '/127.0.0.1:3109/checkout?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'\n+ ]\n- []\n"
+      }
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": true
+    }
+  ],
+  "note": "Read-only browser verification. No order submissions or database writes. WebKit is not a manual Safari test."
+}

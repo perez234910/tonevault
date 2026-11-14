@@ -160,6 +160,15 @@ svg { flex-shrink: 0; }
 .home-intro h1 { font-size: clamp(30px, 3.2vw, 42px); line-height: 1.12; }
 .store-filters { border-block: 1px solid var(--line); padding: 20px 0; }
 .store-filter-search { display: flex; gap: 8px; max-width: 520px; margin-bottom: 14px; }
+.catalog-search { flex: 1; min-width: 0; }
+.catalog-suggestions { position: fixed; z-index: 90; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 3px; padding: 5px; background: #fff; color: var(--foreground); box-shadow: 0 8px 24px #252a250c; opacity: 0; visibility: hidden; transform: translateY(-4px); transform-origin: top left; transition: opacity var(--motion-exit) var(--motion-ease), transform var(--motion-exit) var(--motion-ease), visibility 0s var(--motion-exit); }
+.catalog-suggestions[data-open="true"] { opacity: 1; visibility: visible; transform: none; transition-duration: var(--motion-overlay), var(--motion-overlay), 0s; transition-delay: 0s; }
+.catalog-suggestions[data-side="top"] { translate: 0 -100%; transform-origin: bottom left; }
+.catalog-suggestions ul { min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; }
+.catalog-suggestions li { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 44px; padding: 11px 12px; border-radius: 2px; cursor: pointer; font-size: 13px; transition: background-color var(--motion-micro) var(--motion-ease), color var(--motion-micro) var(--motion-ease); }
+.catalog-suggestions li[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); outline: 1px solid var(--accent); outline-offset: -1px; }
+.suggestion-kind { flex-shrink: 0; color: var(--muted); font-size: 10px; }
+.suggestion-message { padding: 12px; font-size: 12px; line-height: 1.6; color: var(--muted); }
 .store-filter-options { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; }
 .store-select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-width: 0; min-height: 44px; border: 1px solid var(--line); border-radius: 3px; padding: 10px 12px; background: #fff; color: var(--foreground); font-size: 12px; text-align: left; }
 .store-select-trigger > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

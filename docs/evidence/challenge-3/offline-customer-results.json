@@ -1,0 +1,41 @@
+{
+  "runDate": "2026-11-08",
+  "timezone": "Asia/Manila",
+  "base": "http://localhost:3000",
+  "sampleOnly": true,
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "passed": true,
+      "mainFlowPageErrors": [],
+      "mainFlowConsoleErrors": [],
+      "negativeStatesTested": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "passed": true,
+      "mainFlowPageErrors": [],
+      "mainFlowConsoleErrors": [],
+      "negativeStatesTested": false
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "passed": true,
+      "mainFlowPageErrors": [],
+      "mainFlowConsoleErrors": [],
+      "negativeStatesTested": false
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "passed": true,
+      "mainFlowPageErrors": [],
+      "mainFlowConsoleErrors": [],
+      "negativeStatesTested": false
+    }
+  ],
+  "note": "Automated Chromium/WebKit; not a physical phone, outside tester, or manually operated Safari."
+}

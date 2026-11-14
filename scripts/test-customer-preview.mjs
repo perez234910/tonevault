@@ -58,10 +58,10 @@ async function run(engine, width) {
     await choose("Condition", "Checking / playwear");
     await page.getByText("No instruments match these filters.", { exact: true }).waitFor();
     await choose("Condition", "Any condition"); await count(1);
-    await page.getByRole("textbox", { name: "Search instruments" }).fill("no-such-guitar");
+    await page.getByRole("combobox", { name: "Search instruments" }).fill("no-such-guitar");
     await page.getByRole("button", { name: "Search", exact: true }).click();
     await page.getByText("No instruments match these filters.", { exact: true }).waitFor();
-    await page.getByRole("textbox", { name: "Search instruments" }).fill("Custom 24");
+    await page.getByRole("combobox", { name: "Search instruments" }).fill("Custom 24");
     await page.getByRole("button", { name: "Search", exact: true }).click(); await count(1);
     await page.locator('main a[href^="/products/"]:visible').click();
     await page.getByRole("heading", { name: prsTitle, exact: true }).waitFor();

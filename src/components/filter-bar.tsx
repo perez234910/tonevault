@@ -3,6 +3,8 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { StoreSelect } from "./ui/select";
+import { CatalogSearch } from "./catalog-search";
+import { suggestionHref } from "@/src/lib/catalog-search";
 
 const PRICE_RANGES = [
   { label: "Any price", value: "" },
@@ -55,8 +57,8 @@ export function FilterBar({ brands }: { brands: string[] }) {
 
   return <form className="store-filters" aria-label="Filter instruments" aria-busy={pending}
     onSubmit={(event) => { event.preventDefault(); update("query", String(new FormData(event.currentTarget).get("query") ?? "").trim()); }}>
-    <div className="store-filter-search"><label htmlFor="catalog-search" className="sr-only">Search instruments</label>
-      <input id="catalog-search" key={searchParams.get("query") ?? searchParams.get("search") ?? ""} name="query" defaultValue={searchParams.get("query") ?? searchParams.get("search") ?? ""} placeholder="Brand, model or finish" className="ui-control" />
+    <div className="store-filter-search">
+      <CatalogSearch label="Search instruments" key={searchParams.get("query") ?? searchParams.get("search") ?? ""} defaultValue={searchParams.get("query") ?? searchParams.get("search") ?? ""} className="ui-control" status={searchParams.get("status") === "sold" ? "sold" : "available"} onPick={suggestion => startTransition(() => router.push(suggestionHref(suggestion, new URLSearchParams(searchParams.toString()))))} />
       <button type="submit" className="ui-button" disabled={pending}>Search</button></div>
     <div className="store-filter-options">
       <StoreSelect label="Brand" value={searchParams.get("brand") ?? ""} onChange={(value) => update("brand", value)} disabled={pending} options={[{value:"",label:"All brands"},...brands.map((brand) => ({value:brand,label:brand}))]} />

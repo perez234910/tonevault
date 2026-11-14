@@ -7,6 +7,8 @@ import { useCart } from "./cart-context";
 import { Icon } from "./ui/icon";
 import { ModalShell } from "./ui/modal-shell";
 import { QuickCart } from "./quick-cart";
+import { CatalogSearch } from "./catalog-search";
+import { suggestionHref, type CatalogSuggestion } from "@/src/lib/catalog-search";
 
 const collectionLinks = [
   { href: "/browse", label: "All instruments" },
@@ -51,12 +53,13 @@ export function SiteHeader() {
     const query = String(new FormData(event.currentTarget).get("query") ?? "").trim();
     navigate(); router.push(query ? `/browse?${new URLSearchParams({ query })}` : "/browse");
   }
+  function pickSuggestion(suggestion: CatalogSuggestion) { navigate(); router.push(suggestionHref(suggestion)); }
 
   return <>
     <header className="site-header">
       <div className="site-header-row">
         <Link href="/" className="wordmark" aria-label="ToneVault home" onClick={navigate}>tonevault</Link>
-        <form role="search" aria-label="Header catalog search" className="header-search" onSubmit={search}><Icon name="search" size={16} /><input name="query" aria-label="Find your next guitar" placeholder="Find your next guitar" /><button type="submit" aria-label="Search catalog" className="flex h-10 items-center"><Icon name="arrow" size={14} /></button></form>
+        <form role="search" aria-label="Header catalog search" className="header-search" onSubmit={search}><Icon name="search" size={16} /><CatalogSearch label="Find your next guitar" onPick={pickSuggestion} onFocus={() => setCollectionOpen(false)} /><button type="submit" aria-label="Search catalog" className="flex h-10 items-center"><Icon name="arrow" size={14} /></button></form>
         <nav aria-label="Main navigation" className="desktop-nav">
           <Link href="/browse" aria-current={active === 0 ? "page" : undefined} className="nav-item" onClick={navigate}>Browse</Link>
           <Link href="/browse?verificationStatus=Fully%20Verified" aria-current={verified ? "page" : undefined} className="nav-item" onClick={navigate}>Verified</Link>
@@ -85,7 +88,7 @@ export function SiteHeader() {
     <ModalShell open={isOpen || mobileOpen} titleId={kind === "cart" ? "quick-cart-title" : "mobile-nav-title"} restoreFocus={restoreFocus} returnFocusRef={modalTrigger} onDismiss={dismiss}>
       {kind === "cart" ? <QuickCart onDismiss={dismiss} onNavigate={navigate} /> : <>
         <div className="drawer-heading"><h2 id="mobile-nav-title">Explore ToneVault</h2><button autoFocus type="button" className="ui-icon-button" aria-label="Close navigation" onClick={dismiss}><Icon name="close" /></button></div>
-        <div className="drawer-content"><form role="search" aria-label="Mobile catalog search" className="mb-5" onSubmit={search}><label className="ui-eyebrow" htmlFor="mobile-search">Find your next guitar</label><div className="mt-3 flex gap-2"><input id="mobile-search" name="query" className="ui-control" placeholder="Brand, model or finish" /><button type="submit" className="ui-icon-button" aria-label="Search catalog"><Icon name="search" size={18} /></button></div></form>
+        <div className="drawer-content"><form role="search" aria-label="Mobile catalog search" className="mb-5" onSubmit={search}><div className="flex gap-2"><CatalogSearch label="Find your next guitar" className="ui-control" onPick={pickSuggestion} /><button type="submit" className="ui-icon-button" aria-label="Search catalog"><Icon name="search" size={18} /></button></div></form>
           <nav aria-label="Mobile navigation"><Link href="/browse" className="mobile-nav-link" aria-current={active === 0 ? "page" : undefined} onClick={navigate}>Browse <Icon name="arrow" /></Link><Link href="/browse?verificationStatus=Fully%20Verified" className="mobile-nav-link" aria-current={verified ? "page" : undefined} onClick={navigate}>Verified <Icon name="arrow" /></Link><Link href="/cart" className="mobile-nav-link" aria-current={pathname === "/cart" ? "page" : undefined} onClick={navigate}>Your cart <Icon name="bag" /></Link></nav>
           <p className="mt-8 mb-2 text-xs text-muted">By maker</p>{collectionLinks.slice(1,4).map((link) => <Link key={link.href} href={link.href} className="block py-3 text-sm text-muted" onClick={navigate}>{link.label}</Link>)}
         </div><div className="drawer-footer text-xs leading-6 text-muted">Pre-owned instruments. Thoughtful decisions.<br />Demo checkout; no real payment.</div>

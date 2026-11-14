@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": true
+    }
+  ],
+  "note": "Read-only browser verification. No order submissions or database writes. WebKit is not a manual Safari test."
+}
