@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "ToneVault API",
-    "description": "Catalog and order endpoints, including Challenge 1 validation cases.\n\nSetup:\n1. Set `baseUrl` (local: http://localhost:3000, or your Vercel URL).\n2. Run `npm run seed` and copy the printed `buyer_id` into the collection variable.\n3. Send **GET /api/products** first — it stores an available `productId` for the order tests.\n4. Run Challenge 1 cases 1–6. Case 2 creates a real order; run it last on a listing that is still available.",
+    "description": "Catalog and simulated order endpoints with Challenge 1 validation cases. Set baseUrl to an actual verified deployment (localhost is local evidence only). Use an authorized isolated test DB and demo buyer. Obtain explicit approval before any production seed reset or stock-consuming POST. Send GET /api/products first to capture productId and productUnitPrice. Run validation cases before wrong-total case 2, which saves an order and consumes stock. Re-running seed refreshes stock/status/price; never reset production blindly.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -20,6 +20,10 @@
     {
       "key": "missingProductId",
       "value": "00000000-0000-4000-8000-000000000000"
+    },
+    {
+      "key": "productUnitPrice",
+      "value": ""
     }
   ],
   "item": [
@@ -35,12 +39,16 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.unset('productId');",
+                  "pm.collectionVariables.unset('productUnitPrice');",
                   "const body = pm.response.json();",
                   "const list = body.data || body.products || [];",
                   "pm.test('Returns a product list', () => pm.expect(Array.isArray(list)).to.be.true);",
                   "const available = list.find((item) => item.status === 'available' && (item.stock ?? 1) > 0);",
+                  "pm.test('Available instrument selected for order tests', () => pm.expect(Boolean(available)).to.be.true);",
                   "if (available) {",
                   "  pm.collectionVariables.set('productId', available.id);",
+                  "  pm.collectionVariables.set('productUnitPrice', String(available.price));",
                   "  console.log('Saved productId', available.id);",
                   "}"
                 ]
@@ -122,14 +130,13 @@
                 "type": "text/javascript",
                 "exec": [
                   "const status = pm.response.code;",
-                  "pm.test('201 with server total, or 400', () => {",
-                  "  pm.expect([201, 400]).to.include(status);",
-                  "});",
+                  "pm.test('201 with server total, or 400', () => pm.expect([201, 400]).to.include(status));",
                   "if (status === 201) {",
                   "  const body = pm.response.json();",
-                  "  pm.test('Ignores client total of 1', () => {",
-                  "    pm.expect(body.data.order.total_amount).to.not.eql(1);",
-                  "    pm.expect(body.data.order.total_amount).to.be.above(1);",
+                  "  const unitPrice = Number(pm.collectionVariables.get('productUnitPrice'));",
+                  "  pm.test('Catalog GET supplied a valid unit price', () => pm.expect(Number.isFinite(unitPrice) && unitPrice > 0).to.be.true);",
+                  "  pm.test('Server total equals catalog price times quantity', () => {",
+                  "    pm.expect(body.data.order.total_amount).to.eql(unitPrice * body.data.order.quantity);",
                   "  });",
                   "}"
                 ]
