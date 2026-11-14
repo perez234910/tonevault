@@ -83,7 +83,7 @@ Target customer, from GC1 p. 1: buyers of premium pre-owned and vintage guitars 
 
 ## 3. Owner-stated business rules, revenue features and conclusions — Member 4
 
-> **Member 4 scope:** The selected GC2 features use GC1's 8% commission and verification service. PRs #40–#42 are open and unmerged. The automated and read-only catalog checks below are real; database migration, deployed order evidence and human review remain pending. Member 3 PR #37 contains an earlier duplicate pricing design and must be reconciled before either stack is merged (§3.4).
+Member 4 scope: The selected GC2 features use GC1's 8% commission and verification service. PRs #40–#42 are open and unmerged. The automated and read-only catalog checks below are real; database migration, deployed order evidence and human review remain pending. Member 3 PR #37 now uses Member 4's pricing contract. The remaining migration overlap concerns guest checkout (§3.4).
 
 ### 3.1 Five owner-stated business rules
 
@@ -117,9 +117,11 @@ GC2 stores a transparent snapshot instead of processing money. Therefore these a
 
 ### 3.4 Member 3 pricing coordination
 
-Member 3 PR #37 independently defines `checkout_pricing_rules`, `order_pricing`, an 8% commission, a ₱8,500 physical-inspection fee, and a checkout RPC that calls the old three-argument `place_catalog_order`. Merging it unchanged with Member 4 PR #41 would create two active rule sources and an incompatible RPC call.
+At the reviewed commit 3f2cd23, Member 3 PR #37 uses Member 4's pricing contract. placeCheckoutOrder calls quoteCatalogPricing, and place_checkout_order calls the 12-argument place_catalog_order. The earlier checkout_pricing_rules and order_pricing definitions and three-argument RPC call are no longer present.
 
-The integration decision is: retain Member 4's `ACTIVE_PRICING_RULES` as the one active rate/fee source; have checkout submit only `product_id`, `quantity`, and `verification_option`; let Member 4's server quote and RPC save the snapshot; keep Member 3's authentication/contact/payment fields only after adapting its checkout RPC to the new signature. Remove the duplicate Member 3 pricing function/table/trigger during human integration review. No Member 3 branch was edited by Member 4.
+The remaining overlap is in the migrations: #37 re-creates place_catalog_order to allow a null buyer_id for guest checkout. Coordinate the migration order with Member 3 so the final function preserves both Member 4's pricing validation and snapshot storage and Member 3's guest-checkout support.
+
+ACTIVE_PRICING_RULES remains the single source for commission and verification fees. After applying the coordinated migrations to a test database, verify that guest checkout saves the server-calculated pricing snapshot and reduces stock in the same transaction. This integration test remains pending.
 
 ---
 
