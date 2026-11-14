@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "ownerDataRequests": 0
+    }
+  ],
+  "note": "UI-only owner shell; zero hardcoded business values or privileged/private-data requests. Authenticated Member 5 APIs are pending."
+}

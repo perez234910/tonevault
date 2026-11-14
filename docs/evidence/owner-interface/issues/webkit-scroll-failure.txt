@@ -1,0 +1,29 @@
+Actual final offline motion regression, November 8, 2026 (Asia/Manila).
+Case: Playwright WebKit, 1440px, normal motion.
+Original implementation locked both root and body overflow but left body in flow.
+Original source: modal-shell-before-fixed-body.txt.
+
+After opening the quick cart, the test sent page.mouse.wheel(0, 500).
+Actual assertion output:
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+510 !== 25
+at run (.../scripts/test-ui-motion.mjs:104:44)
+actual: 510
+expected: 25
+operator: strictEqual
+
+Correction: freeze body positioning at the saved viewport offset while the dialog
+is open, retain root overflow lock and independent drawer scrolling, then restore
+only the touched inline properties and original scroll offset on dismissal.
+Intentional route navigation instead starts at the new route's top.
+
+The updated regression checks actual background/header geometry, wheel blocking,
+style/scroll restoration, focus, and navigation. Freezing the body can reset the
+window scroll coordinate while preserving its visible position; tests compare
+the background's viewport geometry rather than requiring an unchanged coordinate.
+WebKit is not a manual Safari-app or physical-phone test.
+
+The first fixed-body attempt passed Chrome desktop, then the Chrome 390px case
+failed "Opening dialog moved the header". That intermediate source is preserved
+as modal-shell-fixed-body-before-header.txt. The final lock compensates the sticky
+header's measured viewport offset and restores its prior inline transform as well.

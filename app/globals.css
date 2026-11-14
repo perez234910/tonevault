@@ -209,3 +209,23 @@ svg { flex-shrink: 0; }
 .status-point { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 50%; font-variant-numeric: tabular-nums; }
 .status-point--reached { color: #fff; background: var(--accent); border-color: var(--accent); }
 @media (max-width: 767px) { .order-progress { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; } }
+.owner-layout { display: grid; grid-template-columns: 160px minmax(0,1fr); align-items: start; gap: 40px; }
+.owner-sidebar { border-right: 1px solid var(--line); padding-right: 24px; }
+.owner-sidebar nav { display: grid; gap: 5px; }
+.owner-sidebar a { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; font-size: 13px; }
+.owner-access-note { margin: 28px 0 36px; border-block: 1px solid var(--line); padding: 18px 0; font-size: 13px; line-height: 1.8; color: var(--muted); }
+.owner-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; }
+.owner-metrics > div { border-top: 1px solid var(--line); padding-top: 18px; }
+.owner-metrics dt { color: var(--muted); font-size: 12px; }
+.owner-metrics dd { margin-top: 15px; font-size: 28px; line-height: 1; }
+.metric-unavailable { display: block; margin-top: 10px; font-size: 11px; color: var(--muted); }
+.owner-table-scroll { overflow-x: auto; width: 100%; }
+.owner-table { border-collapse: collapse; width: 100%; text-align: left; }
+.owner-table th { font-weight: 400; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); padding: 0 10px 16px 0; }
+.owner-table td { border-bottom: 1px solid var(--line); }
+.owner-orders-unavailable { text-align: center; padding: 44px 16px; }
+.owner-orders-unavailable svg { margin: 0 auto 18px; color: var(--accent); }
+.owner-orders-unavailable h3 { font-size: 20px; }
+.owner-orders-unavailable p { max-width: 370px; margin: 12px auto 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
+#overview, #orders { scroll-margin-top: 110px; }
+@media (max-width: 767px) { .owner-layout { grid-template-columns: minmax(0,1fr); gap: 30px; } .owner-sidebar { border-right: 0; border-bottom: 1px solid var(--line); padding: 0 0 18px; } .owner-sidebar nav { display: flex; flex-wrap: wrap; gap: 20px; } .owner-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 16px; } .owner-table th { padding-right: 8px; font-size: 10px; } }

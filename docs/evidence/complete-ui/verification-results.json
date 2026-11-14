@@ -1,0 +1,88 @@
+{
+  "checkedAt": "2026-11-08T11:29:43.340070+08:00",
+  "branch": "g2/m2-owner-interface",
+  "checks": {
+    "typescript": "passed",
+    "standaloneTsc": "passed",
+    "eslint": "passed",
+    "automatedTests": {
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0
+    },
+    "productionBuild": "passed",
+    "browserCasesPassed": 45,
+    "serverSecretAbsentFromBrowserChunks": true,
+    "browserChunksChecked": 19,
+    "localhostMockMode": false
+  },
+  "suites": [
+    {
+      "suite": "real-storefront",
+      "passedCases": 8,
+      "artifact": "real-storefront.json"
+    },
+    {
+      "suite": "checkout",
+      "passedCases": 8,
+      "artifact": "checkout.json"
+    },
+    {
+      "suite": "confirmation",
+      "passedCases": 8,
+      "artifact": "confirmation.json"
+    },
+    {
+      "suite": "owner",
+      "passedCases": 8,
+      "artifact": "../owner-interface/results.json"
+    },
+    {
+      "suite": "offline-customer",
+      "passedCases": 4,
+      "artifact": "offline-customer.json"
+    },
+    {
+      "suite": "offline-motion",
+      "passedCases": 9,
+      "artifact": "offline-motion.json"
+    }
+  ],
+  "readOnlySupabase": {
+    "checkedAt": "2026-11-08T03:16:45.602Z",
+    "tables": [
+      {
+        "table": "users",
+        "status": 206,
+        "count": "*/2",
+        "expectedColumnsAccepted": true
+      },
+      {
+        "table": "products",
+        "status": 206,
+        "count": "*/8",
+        "expectedColumnsAccepted": true
+      },
+      {
+        "table": "orders",
+        "status": 206,
+        "count": "*/3",
+        "expectedColumnsAccepted": true
+      }
+    ],
+    "seedProductIdentities": 8,
+    "databaseWritesPerformed": false
+  },
+  "npmAudit": {
+    "moderate": 8,
+    "high": 0,
+    "critical": 0,
+    "trackingIssue": 17
+  },
+  "limits": [
+    "Confirmation positive/access/missing cases include explicitly synthetic intercepted responses, never saved database records.",
+    "Owner live metrics/orders remain unavailable; loading/error/empty/ready are separately tested presentation states.",
+    "WebKit is engine automation, not manual Safari or physical-phone evidence.",
+    "No private user/order rows, migrations, seeds, purchases or database writes."
+  ]
+}
