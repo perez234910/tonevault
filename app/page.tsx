@@ -20,13 +20,13 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/25" />
         <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-end px-4 py-20 sm:px-6">
-          <p className="text-xs uppercase tracking-[0.32em] text-gold">Pre-owned · Vintage · Escrowed</p>
+          <p className="text-xs uppercase tracking-[0.32em] text-gold">Pre-owned · Vintage · Simulated checkout</p>
           <h1 className="mt-4 max-w-3xl font-serif text-5xl leading-[1.05] text-foreground sm:text-7xl">
             Find your sound. Know its story.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:text-lg">
-            ToneVault grades high-end instruments, documents provenance, and holds funds in escrow until
-            the guitar in your hands matches the guitar on the page.
+            Explore high-end instruments with condition notes, photography, and verification labels.
+            This course prototype uses simulated checkout; no funds are collected or held.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -56,7 +56,7 @@ export default function HomePage() {
         />
         <ValueCard
           title="Protect"
-          copy="Payment sits in escrow through shipment and delivery. Funds release only after you approve the instrument."
+          copy="Review each instrument before deciding. Checkout is simulated in this course prototype; real payments and escrow are not connected."
         />
       </section>
 
