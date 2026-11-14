@@ -2,6 +2,9 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { StoreSelect } from "./ui/select";
+import { CatalogSearch } from "./catalog-search";
+import { suggestionHref } from "@/src/lib/catalog-search";
 
 const PRICE_RANGES = [
   { label: "Any price", value: "" },
@@ -30,6 +33,8 @@ export function FilterBar({ brands }: { brands: string[] }) {
 
   function update(name: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("offset");
+    if (name === "query") params.delete("search");
 
     if (name === "price") {
       params.delete("minPrice");
@@ -50,75 +55,18 @@ export function FilterBar({ brands }: { brands: string[] }) {
     });
   }
 
-  const selectClass =
-    "w-full rounded-xl border border-line bg-panel px-3 py-2.5 text-sm text-foreground outline-none focus:border-gold";
-
-  return (
-    <form
-      className={`grid gap-3 rounded-2xl border border-line bg-panel p-4 sm:grid-cols-2 lg:grid-cols-4 ${
-        pending ? "opacity-70" : ""
-      }`}
-      onSubmit={(event) => event.preventDefault()}
-    >
-      <label className="block text-[11px] uppercase tracking-[0.18em] text-muted">
-        Brand
-        <select
-          className={`${selectClass} mt-2`}
-          value={searchParams.get("brand") ?? ""}
-          onChange={(event) => update("brand", event.target.value)}
-        >
-          <option value="">All brands</option>
-          {brands.map((brand) => (
-            <option key={brand} value={brand}>
-              {brand}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="block text-[11px] uppercase tracking-[0.18em] text-muted">
-        Price
-        <select
-          className={`${selectClass} mt-2`}
-          value={currentPriceValue(
-            searchParams.get("minPrice") ?? undefined,
-            searchParams.get("maxPrice") ?? undefined,
-          )}
-          onChange={(event) => update("price", event.target.value)}
-        >
-          {PRICE_RANGES.map((range) => (
-            <option key={range.label} value={range.value}>
-              {range.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="block text-[11px] uppercase tracking-[0.18em] text-muted">
-        Verification
-        <select
-          className={`${selectClass} mt-2`}
-          value={searchParams.get("verificationStatus") ?? ""}
-          onChange={(event) => update("verificationStatus", event.target.value)}
-        >
-          <option value="">All statuses</option>
-          <option value="Fully Verified">Fully Verified</option>
-          <option value="Remote Verified">Remote Verified</option>
-          <option value="Unverified">Unverified</option>
-        </select>
-      </label>
-      <label className="block text-[11px] uppercase tracking-[0.18em] text-muted">
-        Condition
-        <select
-          className={`${selectClass} mt-2`}
-          value={searchParams.get("condition") ?? ""}
-          onChange={(event) => update("condition", event.target.value)}
-        >
-          {CONDITIONS.map((condition) => (
-            <option key={condition.label} value={condition.value}>
-              {condition.label}
-            </option>
-          ))}
-        </select>
-      </label>
-    </form>
-  );
+  return <form className="store-filters" aria-label="Filter instruments" aria-busy={pending}
+    onSubmit={(event) => { event.preventDefault(); update("query", String(new FormData(event.currentTarget).get("query") ?? "").trim()); }}>
+    <div className="store-filter-search">
+      <CatalogSearch label="Search instruments" key={searchParams.get("query") ?? searchParams.get("search") ?? ""} defaultValue={searchParams.get("query") ?? searchParams.get("search") ?? ""} className="ui-control" status={searchParams.get("status") === "sold" ? "sold" : "available"} onPick={suggestion => startTransition(() => router.push(suggestionHref(suggestion, new URLSearchParams(searchParams.toString()))))} />
+      <button type="submit" className="ui-button" disabled={pending}>Search</button></div>
+    <div className="store-filter-options">
+      <StoreSelect label="Brand" value={searchParams.get("brand") ?? ""} onChange={(value) => update("brand", value)} disabled={pending} options={[{value:"",label:"All brands"},...brands.map((brand) => ({value:brand,label:brand}))]} />
+      <StoreSelect label="Price" value={currentPriceValue(searchParams.get("minPrice") ?? undefined, searchParams.get("maxPrice") ?? undefined)} onChange={(value) => update("price", value)} disabled={pending} options={PRICE_RANGES} />
+      <StoreSelect label="Verification" value={searchParams.get("verificationStatus") ?? ""} onChange={(value) => update("verificationStatus", value)} disabled={pending} options={[{value:"",label:"All verification"},...['Fully Verified','Remote Verified','Unverified'].map((value) => ({value,label:value}))]} />
+      <StoreSelect label="Condition" value={searchParams.get("condition") ?? ""} onChange={(value) => update("condition", value)} disabled={pending} options={CONDITIONS} />
+      <StoreSelect label="Availability" value={searchParams.get("status") ?? "available"} onChange={(value) => update("status", value)} disabled={pending} options={[{value:"available",label:"Available"},{value:"sold",label:"Sold out"}]} />
+    </div>
+    {pending ? <span role="status" className="sr-only">Updating instruments…</span> : null}
+  </form>;
 }

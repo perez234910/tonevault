@@ -1,0 +1,101 @@
+{
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        403,
+        404
+      ],
+      "syntheticResponseTests": true
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        403,
+        404
+      ],
+      "syntheticResponseTests": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        403,
+        404
+      ],
+      "syntheticResponseTests": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        403,
+        404
+      ],
+      "syntheticResponseTests": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        403,
+        404
+      ],
+      "syntheticResponseTests": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        403,
+        404
+      ],
+      "syntheticResponseTests": true
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        403,
+        404
+      ],
+      "syntheticResponseTests": true
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "expectedHttpFailures": [
+        404,
+        403,
+        404
+      ],
+      "syntheticResponseTests": true
+    }
+  ],
+  "note": "Real backend has no order-read route. Positive/denied/missing contract cases use explicitly synthetic browser interception, not database records. Screenshots show only actual unavailable UI."
+}

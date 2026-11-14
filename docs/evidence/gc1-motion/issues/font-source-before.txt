@@ -1,0 +1,3 @@
+DM Sans variable Latin font, weights 100–900, downloaded from the Google Fonts CSS API on November 8, 2026. Source CSS: https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&display=swap
+Font source: https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAC5thTg.ttf
+License: SIL Open Font License 1.1, preserved in OFL-DM-Sans.txt. Used locally through next/font/local; no font network dependency at runtime.

@@ -1,0 +1,24 @@
+{
+  "sourceCommit": "55ddb5035c1bd31a3ff3b14c8e3c260726913e29",
+  "results": [
+    {
+      "width": 1440,
+      "query": "GI",
+      "visibleSuggestionListboxes": 0,
+      "suggestionRequestsAfterTyping": 0,
+      "catalogHasGibson": true,
+      "dataSource": "supabase",
+      "submitted": false
+    },
+    {
+      "width": 390,
+      "query": "GI",
+      "visibleSuggestionListboxes": 0,
+      "suggestionRequestsAfterTyping": 0,
+      "catalogHasGibson": true,
+      "dataSource": "supabase",
+      "submitted": false
+    }
+  ],
+  "note": "Agent verification of original implementation; not a claim that the student ran these checks."
+}

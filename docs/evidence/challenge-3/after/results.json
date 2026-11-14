@@ -1,0 +1,93 @@
+{
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 2,
+      "negativeStates": true,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 1
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 2,
+      "negativeStates": false,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 2,
+      "negativeStates": false,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 2,
+      "negativeStates": false,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 2,
+      "negativeStates": false,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 2,
+      "negativeStates": false,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 2,
+      "negativeStates": false,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 2,
+      "negativeStates": false,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    }
+  ],
+  "note": "Agent-run real-catalog GET tests. Delayed/error fixtures are isolated technical checks, not student observations or actual backend failures. No database writes."
+}

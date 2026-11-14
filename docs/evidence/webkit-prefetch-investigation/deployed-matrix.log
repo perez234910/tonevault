@@ -1,0 +1,99 @@
+PASS storefront chromium 1440px reduced=false source=supabase
+PASS storefront chromium 1440px reduced=true source=supabase
+PASS storefront chromium 390px reduced=false source=supabase
+PASS storefront chromium 390px reduced=true source=supabase
+FAIL storefront webkit 1440px reduced=false: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   '/tonevault-seven.vercel.app/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.',
++   '/tonevault-seven.vercel.app/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
++   '/tonevault-seven.vercel.app/browse?brand=Gibson&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
++   '/tonevault-seven.vercel.app/browse?brand=PRS&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
++   '/tonevault-seven.vercel.app/browse?status=sold&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'
++ ]
+- []
+
+FAIL storefront webkit 1440px reduced=true: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   '/tonevault-seven.vercel.app/products/5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9?_rsc=jrqPsPni7ljHh19F due to access control checks.',
++   '/tonevault-seven.vercel.app/products/f3621316-61d6-4549-9f54-132d7bfc00ad?_rsc=jrqPsPni7ljHh19F due to access control checks.',
++   '/tonevault-seven.vercel.app/products/426f1b1f-4203-4907-8db2-598c1a373d16?_rsc=jrqPsPni7ljHh19F due to access control checks.',
++   '/tonevault-seven.vercel.app/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
++   '/tonevault-seven.vercel.app/browse?brand=Gibson&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
++   '/tonevault-seven.vercel.app/browse?brand=PRS&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
++   '/tonevault-seven.vercel.app/browse?status=sold&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'
++ ]
+- []
+
+PASS storefront webkit 390px reduced=false source=supabase
+PASS storefront webkit 390px reduced=true source=supabase
+file:///private/var/folders/7d/186v11rd1d33_vj1z8dgqs700000gp/T/tonevault-matrix-lks9t9/complete-matrix.mjs:52
+if(failures.length)throw new AggregateError(failures,`${failures.length} storefront case(s) failed; original assertions retained.`);
+                         ^
+
+AggregateError: 2 storefront case(s) failed; original assertions retained.
+    at file:///private/var/folders/7d/186v11rd1d33_vj1z8dgqs700000gp/T/tonevault-matrix-lks9t9/complete-matrix.mjs:52:26 {
+  [errors]: [
+    AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+    + actual - expected
+
+    + [
+    +   '/tonevault-seven.vercel.app/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.',
+    +   '/tonevault-seven.vercel.app/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+    +   '/tonevault-seven.vercel.app/browse?brand=Gibson&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+    +   '/tonevault-seven.vercel.app/browse?brand=PRS&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+    +   '/tonevault-seven.vercel.app/browse?status=sold&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'
+    + ]
+    - []
+
+        at file:///private/var/folders/7d/186v11rd1d33_vj1z8dgqs700000gp/T/tonevault-matrix-lks9t9/complete-matrix.mjs:46:102 {
+      generatedMessage: true,
+      code: 'ERR_ASSERTION',
+      actual: [
+        '/tonevault-seven.vercel.app/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.',
+        '/tonevault-seven.vercel.app/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+        '/tonevault-seven.vercel.app/browse?brand=Gibson&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+        '/tonevault-seven.vercel.app/browse?brand=PRS&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+        '/tonevault-seven.vercel.app/browse?status=sold&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'
+      ],
+      expected: [],
+      operator: 'deepStrictEqual',
+      diff: 'simple'
+    },
+    AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+    + actual - expected
+
+    + [
+    +   '/tonevault-seven.vercel.app/products/5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9?_rsc=jrqPsPni7ljHh19F due to access control checks.',
+    +   '/tonevault-seven.vercel.app/products/f3621316-61d6-4549-9f54-132d7bfc00ad?_rsc=jrqPsPni7ljHh19F due to access control checks.',
+    +   '/tonevault-seven.vercel.app/products/426f1b1f-4203-4907-8db2-598c1a373d16?_rsc=jrqPsPni7ljHh19F due to access control checks.',
+    +   '/tonevault-seven.vercel.app/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+    +   '/tonevault-seven.vercel.app/browse?brand=Gibson&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+    +   '/tonevault-seven.vercel.app/browse?brand=PRS&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+    +   '/tonevault-seven.vercel.app/browse?status=sold&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'
+    + ]
+    - []
+
+        at file:///private/var/folders/7d/186v11rd1d33_vj1z8dgqs700000gp/T/tonevault-matrix-lks9t9/complete-matrix.mjs:46:102 {
+      generatedMessage: true,
+      code: 'ERR_ASSERTION',
+      actual: [
+        '/tonevault-seven.vercel.app/products/5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9?_rsc=jrqPsPni7ljHh19F due to access control checks.',
+        '/tonevault-seven.vercel.app/products/f3621316-61d6-4549-9f54-132d7bfc00ad?_rsc=jrqPsPni7ljHh19F due to access control checks.',
+        '/tonevault-seven.vercel.app/products/426f1b1f-4203-4907-8db2-598c1a373d16?_rsc=jrqPsPni7ljHh19F due to access control checks.',
+        '/tonevault-seven.vercel.app/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+        '/tonevault-seven.vercel.app/browse?brand=Gibson&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+        '/tonevault-seven.vercel.app/browse?brand=PRS&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+        '/tonevault-seven.vercel.app/browse?status=sold&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'
+      ],
+      expected: [],
+      operator: 'deepStrictEqual',
+      diff: 'simple'
+    }
+  ]
+}
+
+Node.js v26.7.0

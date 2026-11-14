@@ -1,0 +1,75 @@
+PASS storefront chromium 1440px reduced=false source=supabase
+PASS storefront chromium 1440px reduced=true source=supabase
+PASS storefront chromium 390px reduced=false source=supabase
+PASS storefront chromium 390px reduced=true source=supabase
+FAIL storefront webkit 1440px reduced=false: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   '/127.0.0.1:3109/?_rsc=jrqPsPni7ljHh19F due to access control checks.'
++ ]
+- []
+
+FAIL storefront webkit 1440px reduced=true: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   '/127.0.0.1:3109/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.',
++   '/127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
++   '/127.0.0.1:3109/checkout?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'
++ ]
+- []
+
+PASS storefront webkit 390px reduced=false source=supabase
+PASS storefront webkit 390px reduced=true source=supabase
+file:///private/var/folders/7d/186v11rd1d33_vj1z8dgqs700000gp/T/tonevault-matrix-TP6EN0/complete-matrix.mjs:52
+if(failures.length)throw new AggregateError(failures,`${failures.length} storefront case(s) failed; original assertions retained.`);
+                         ^
+
+AggregateError: 2 storefront case(s) failed; original assertions retained.
+    at file:///private/var/folders/7d/186v11rd1d33_vj1z8dgqs700000gp/T/tonevault-matrix-TP6EN0/complete-matrix.mjs:52:26 {
+  [errors]: [
+    AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+    + actual - expected
+
+    + [
+    +   '/127.0.0.1:3109/?_rsc=jrqPsPni7ljHh19F due to access control checks.'
+    + ]
+    - []
+
+        at file:///private/var/folders/7d/186v11rd1d33_vj1z8dgqs700000gp/T/tonevault-matrix-TP6EN0/complete-matrix.mjs:46:102 {
+      generatedMessage: true,
+      code: 'ERR_ASSERTION',
+      actual: [
+        '/127.0.0.1:3109/?_rsc=jrqPsPni7ljHh19F due to access control checks.'
+      ],
+      expected: [],
+      operator: 'deepStrictEqual',
+      diff: 'simple'
+    },
+    AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+    + actual - expected
+
+    + [
+    +   '/127.0.0.1:3109/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.',
+    +   '/127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+    +   '/127.0.0.1:3109/checkout?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'
+    + ]
+    - []
+
+        at file:///private/var/folders/7d/186v11rd1d33_vj1z8dgqs700000gp/T/tonevault-matrix-TP6EN0/complete-matrix.mjs:46:102 {
+      generatedMessage: true,
+      code: 'ERR_ASSERTION',
+      actual: [
+        '/127.0.0.1:3109/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.',
+        '/127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',
+        '/127.0.0.1:3109/checkout?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'
+      ],
+      expected: [],
+      operator: 'deepStrictEqual',
+      diff: 'simple'
+    }
+  ]
+}
+
+Node.js v26.7.0

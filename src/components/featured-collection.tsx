@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { productPhotography } from "@/src/lib/catalog-photography";
 import { ProductCard } from "@/src/components/product-card";
 import { getProducts } from "@/src/actions/catalog";
 
@@ -14,7 +15,7 @@ export async function FeaturedCollection() {
   }
 
   const featured = [...result.data.products]
-    .sort((a, b) => (b.tonevault_score ?? 0) - (a.tonevault_score ?? 0))
+    .sort((a, b) => Number(Boolean(productPhotography(b).images.length)) - Number(Boolean(productPhotography(a).images.length)) || (b.tonevault_score ?? 0) - (a.tonevault_score ?? 0))
     .slice(0, 4);
 
   return (
@@ -27,7 +28,7 @@ export async function FeaturedCollection() {
       <div className="mt-8 text-center">
         <Link
           href="/browse"
-          className="inline-flex rounded-full border border-gold/50 px-5 py-2.5 text-sm text-gold-soft hover:border-gold"
+          className="ui-button"
         >
           View the full catalog
         </Link>

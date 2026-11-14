@@ -1,15 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { Icon } from "./ui/icon";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/src/components/cart-context";
 import { formatPrice, instrumentTitle } from "@/src/lib/format";
+import { productPhotography } from "@/src/lib/catalog-photography";
 import type { Product } from "@/src/types";
 
 export function PurchaseBar({ product }: { product: Product }) {
-  const { addItem, items } = useCart();
+  const { addItem, items, closeCart } = useCart();
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
   const [notice, setNotice] = useState<string | null>(null);
-  const sold = product.status === "sold";
+  const sold = product.status !== "available" || product.stock < 1;
   const inCart = items.some((item) => item.id === product.id);
+  const atLimit = (items.find((item) => item.id === product.id)?.quantity ?? 0) >= product.stock;
   const title = instrumentTitle(product);
 
   function cartPayload() {
@@ -17,54 +23,62 @@ export function PurchaseBar({ product }: { product: Product }) {
       id: product.id,
       title,
       price: product.price,
-      image: product.images[0] ?? null,
+      image: productPhotography(product).images[0] ?? null,
       finish: product.finish,
+      stock: product.stock,
+      status: product.status,
     };
   }
 
   function addToCart() {
     if (sold) return;
-    addItem(cartPayload());
-    setNotice("Held in your vault cart. Escrow starts at checkout.");
+    if (addItem(cartPayload())) {
+      setNotice("Added to your cart.");
+    }
   }
 
   function buyNow() {
     if (sold) return;
-    addItem(cartPayload());
-    setNotice(
-      "Buy now queued. Complete escrow checkout to mark this listing sold and release funds only after delivery approval.",
-    );
+    // An existing selection should not gain another unit just to open the cart.
+    if (inCart || addItem(cartPayload())) {
+      closeCart();
+      startTransition(() => router.push("/cart"));
+    }
   }
 
   return (
-    <div className="sticky bottom-0 z-30 border-t border-line bg-background/95 p-4 backdrop-blur-md lg:static lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-      <div className="flex flex-col gap-3 lg:rounded-2xl lg:border lg:border-line lg:bg-panel lg:p-5">
+    <div className="purchase-bar">
+      <div className="flex flex-col gap-3">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-gold">Asking price</p>
-            <p className="font-serif text-3xl text-foreground">{formatPrice(product.price)}</p>
+            <p className="mt-1 text-3xl tracking-[-.04em] text-foreground">{formatPrice(product.price)}</p>
           </div>
-          <p className="text-xs text-muted">{sold ? "No longer available" : "Protected by ToneVault escrow"}</p>
+          <p className="text-xs text-muted">{sold ? "No longer available" : "Simulated checkout · no real payment"}</p>
         </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div className="purchase-actions">
           <button
             type="button"
-            disabled={sold}
+            disabled={sold || pending}
+            aria-busy={pending}
             onClick={buyNow}
-            className="rounded-full bg-gold px-5 py-3 text-sm font-medium text-background disabled:cursor-not-allowed disabled:opacity-50"
+            aria-describedby="purchase-preview-note"
+            className="ui-button ui-button--primary w-full"
           >
-            Buy now
+            {pending ? "Opening cart…" : "Buy now"} <Icon name="arrow" size={16} />
           </button>
           <button
             type="button"
-            disabled={sold}
+            disabled={sold || atLimit}
             onClick={addToCart}
-            className="rounded-full border border-gold/50 px-5 py-3 text-sm font-medium text-gold-soft disabled:cursor-not-allowed disabled:opacity-50"
+            className="ui-button w-full"
           >
-            {inCart ? "In cart" : "Add to cart"}
+            {sold ? "Sold out" : atLimit ? "In cart · stock limit" : inCart ? "Add another" : "Add to cart"}
           </button>
         </div>
-        {notice ? <p className="text-xs leading-5 text-muted">{notice}</p> : null}
+        <p id="purchase-preview-note" className="text-xs leading-5 text-muted">
+          {sold ? "This instrument is sold out and cannot be added." : "Buy now opens your cart for review. Prices are a preview; no stock is reserved or payment taken."}
+        </p>
+        <p role="status" aria-live="polite" className="min-h-5 text-xs leading-5 text-accent">{notice ? <span key={notice + items.length} className="ui-reveal inline-flex items-start gap-2"><Icon name="check" size={14} />{notice}</span> : null}</p>
       </div>
     </div>
   );

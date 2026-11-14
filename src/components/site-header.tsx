@@ -1,75 +1,98 @@
 "use client";
 
 import Link from "next/link";
-import { useCart } from "@/src/components/cart-context";
-import { formatPrice } from "@/src/lib/format";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useCart } from "./cart-context";
+import { Icon } from "./ui/icon";
+import { ModalShell } from "./ui/modal-shell";
+import { QuickCart } from "./quick-cart";
+import { CatalogSearch } from "./catalog-search";
+import { suggestionHref, type CatalogSuggestion } from "@/src/lib/catalog-search";
+
+const collectionLinks = [
+  { href: "/browse", label: "All instruments" },
+  { href: "/browse?brand=Fender", label: "Fender" },
+  { href: "/browse?brand=Gibson", label: "Gibson" },
+  { href: "/browse?brand=PRS", label: "PRS" },
+  { href: "/browse?status=sold", label: "Sold instruments" },
+];
 
 export function SiteHeader() {
-  const { items, isOpen, toggleCart, closeCart, removeItem } = useCart();
-  const total = items.reduce((sum, item) => sum + item.price, 0);
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const router = useRouter();
+  const { totalQuantity, isOpen, openCart, closeCart } = useCart();
+  const [collectionOpen, setCollectionOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [kind, setKind] = useState<"cart" | "mobile">("cart");
+  const [restoreFocus, setRestoreFocus] = useState(true);
+  const collection = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const modalTrigger = useRef<HTMLButtonElement>(null);
+  const verified = pathname === "/browse" && params.get("verificationStatus") === "Fully Verified";
+  const active = verified ? 1 : pathname === "/browse" || pathname.startsWith("/products/") ? 0 : null;
 
-  return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-        <Link href="/" className="flex items-baseline gap-2">
-          <span className="font-serif text-2xl tracking-tight text-foreground">ToneVault</span>
-          <span className="hidden text-[10px] uppercase tracking-[0.28em] text-gold sm:inline">
-            Graded · Escrowed
-          </span>
-        </Link>
-        <nav className="flex items-center gap-6 text-sm text-muted">
-          <Link href="/browse" className="hover:text-foreground">
-            Browse
-          </Link>
-          <Link href="/browse?verificationStatus=Fully%20Verified" className="hidden hover:text-foreground sm:inline">
-            Verified
-          </Link>
-          <button
-            type="button"
-            onClick={toggleCart}
-            className="rounded-full border border-line px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-foreground hover:border-gold"
-          >
-            Cart {items.length}
-          </button>
-        </nav>
-      </div>
+  useEffect(() => {
+    if (!collectionOpen) return;
+    function pointer(event: PointerEvent) {
+      if (event.target instanceof Node && !collection.current?.contains(event.target)) setCollectionOpen(false);
+    }
+    function keyboard(event: KeyboardEvent) {
+      if (event.key === "Escape") { setCollectionOpen(false); trigger.current?.focus(); }
+    }
+    document.addEventListener("pointerdown", pointer);
+    document.addEventListener("keydown", keyboard);
+    return () => { document.removeEventListener("pointerdown", pointer); document.removeEventListener("keydown", keyboard); };
+  }, [collectionOpen]);
 
-      {isOpen ? (
-        <div className="absolute right-4 top-full z-50 mt-2 w-[min(24rem,calc(100vw-2rem))] rounded-2xl border border-line bg-panel p-4 shadow-2xl sm:right-6">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-xs uppercase tracking-[0.2em] text-gold">Vault cart</p>
-            <button type="button" onClick={closeCart} className="text-xs text-muted hover:text-foreground">
-              Close
-            </button>
+  function dismiss() { closeCart(); setMobileOpen(false); }
+  function navigate() { setRestoreFocus(false); setCollectionOpen(false); dismiss(); }
+  function search(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = String(new FormData(event.currentTarget).get("query") ?? "").trim();
+    navigate(); router.push(query ? `/browse?${new URLSearchParams({ query })}` : "/browse");
+  }
+  function pickSuggestion(suggestion: CatalogSuggestion) { navigate(); router.push(suggestionHref(suggestion)); }
+
+  return <>
+    <header className="site-header">
+      <div className="site-header-row">
+        <Link href="/" className="wordmark" aria-label="ToneVault home" onClick={navigate}>tonevault</Link>
+        <form role="search" aria-label="Header catalog search" className="header-search" onSubmit={search}><Icon name="search" size={16} /><CatalogSearch label="Find your next guitar" onPick={pickSuggestion} onFocus={() => setCollectionOpen(false)} /><button type="submit" aria-label="Search catalog" className="flex h-10 items-center"><Icon name="arrow" size={14} /></button></form>
+        <nav aria-label="Main navigation" className="desktop-nav">
+          <Link href="/browse" aria-current={active === 0 ? "page" : undefined} className="nav-item" onClick={navigate}>Browse</Link>
+          <Link href="/browse?verificationStatus=Fully%20Verified" aria-current={verified ? "page" : undefined} className="nav-item" onClick={navigate}>Verified</Link>
+          <div ref={collection} className="nav-dropdown-shell" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setCollectionOpen(false); }}>
+            <button ref={trigger} type="button" className="nav-item" aria-expanded={collectionOpen} aria-controls="collection-popover" onClick={() => setCollectionOpen((value) => !value)} onKeyDown={(event) => {
+              if (event.key === "ArrowDown") { event.preventDefault(); setCollectionOpen(true); requestAnimationFrame(() => collection.current?.querySelector<HTMLAnchorElement>("a")?.focus()); }
+            }}>Collection <Icon name="chevron" size={12} className="nav-chevron" /></button>
+            <div id="collection-popover" role="region" aria-label="Collection links" className="nav-popover" onKeyDown={(event) => {
+              if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+              event.preventDefault();
+              const links = Array.from(event.currentTarget.querySelectorAll<HTMLAnchorElement>("a"));
+              const current = links.indexOf(document.activeElement as HTMLAnchorElement);
+              const next = event.key === "Home" ? 0 : event.key === "End" ? links.length - 1 : (current + (event.key === "ArrowUp" ? -1 : 1) + links.length) % links.length;
+              links[next]?.focus();
+            }} data-open={collectionOpen} aria-hidden={!collectionOpen} inert={!collectionOpen}>
+              {collectionLinks.map((link) => <Link key={link.href} href={link.href} aria-current={link.href === `${pathname}${params.size ? `?${params.toString()}` : ""}` ? "page" : undefined} onClick={navigate}>{link.label}<Icon name="arrow" size={14} /></Link>)}
+            </div>
           </div>
-          {items.length === 0 ? (
-            <p className="text-sm text-muted">No instruments reserved yet.</p>
-          ) : (
-            <ul className="space-y-3">
-              {items.map((item) => (
-                <li key={item.id} className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm text-foreground">{item.title}</p>
-                    <p className="text-xs text-muted">{formatPrice(item.price)}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeItem(item.id)}
-                    className="text-xs text-muted hover:text-gold"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          {items.length > 0 ? (
-            <p className="mt-4 border-t border-line pt-3 text-sm text-foreground">
-              Escrow total {formatPrice(total)}
-            </p>
-          ) : null}
+        </nav>
+        <div className="header-actions">
+          <button type="button" className="cart-trigger" aria-label={`Open cart, ${totalQuantity} instruments`} aria-haspopup="dialog" aria-expanded={isOpen} onClick={(event) => { modalTrigger.current = event.currentTarget; setRestoreFocus(true); setCollectionOpen(false); setKind("cart"); setMobileOpen(false); openCart(); }}><Icon name="bag" size={19} /><span>Cart</span><span key={totalQuantity} className="cart-count ui-number" aria-live="polite" aria-atomic="true">{totalQuantity}</span></button>
+          <button type="button" className="ui-icon-button mobile-menu-trigger" aria-label="Open navigation" aria-haspopup="dialog" aria-expanded={mobileOpen} onClick={(event) => { modalTrigger.current = event.currentTarget; setRestoreFocus(true); setKind("mobile"); closeCart(); setMobileOpen(true); }}><Icon name="menu" size={19} /></button>
         </div>
-      ) : null}
+      </div>
     </header>
-  );
+    <ModalShell open={isOpen || mobileOpen} titleId={kind === "cart" ? "quick-cart-title" : "mobile-nav-title"} restoreFocus={restoreFocus} returnFocusRef={modalTrigger} onDismiss={dismiss}>
+      {kind === "cart" ? <QuickCart onDismiss={dismiss} onNavigate={navigate} /> : <>
+        <div className="drawer-heading"><h2 id="mobile-nav-title">Explore ToneVault</h2><button autoFocus type="button" className="ui-icon-button" aria-label="Close navigation" onClick={dismiss}><Icon name="close" /></button></div>
+        <div className="drawer-content"><form role="search" aria-label="Mobile catalog search" className="mb-5" onSubmit={search}><div className="flex gap-2"><CatalogSearch label="Find your next guitar" className="ui-control" onPick={pickSuggestion} /><button type="submit" className="ui-icon-button" aria-label="Search catalog"><Icon name="search" size={18} /></button></div></form>
+          <nav aria-label="Mobile navigation"><Link href="/browse" className="mobile-nav-link" aria-current={active === 0 ? "page" : undefined} onClick={navigate}>Browse <Icon name="arrow" /></Link><Link href="/browse?verificationStatus=Fully%20Verified" className="mobile-nav-link" aria-current={verified ? "page" : undefined} onClick={navigate}>Verified <Icon name="arrow" /></Link><Link href="/cart" className="mobile-nav-link" aria-current={pathname === "/cart" ? "page" : undefined} onClick={navigate}>Your cart <Icon name="bag" /></Link></nav>
+          <p className="mt-8 mb-2 text-xs text-muted">By maker</p>{collectionLinks.slice(1,4).map((link) => <Link key={link.href} href={link.href} className="block py-3 text-sm text-muted" onClick={navigate}>{link.label}</Link>)}
+        </div><div className="drawer-footer text-xs leading-6 text-muted">Pre-owned instruments. Thoughtful decisions.<br />Demo checkout; no real payment.</div>
+      </>}
+    </ModalShell>
+  </>;
 }

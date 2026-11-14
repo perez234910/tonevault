@@ -89,7 +89,7 @@ Both IDs are required valid UUIDs. Quantity is required and must be a positive i
 
 Error shape: `{ "ok": false, "code": CatalogErrorCode, "error": string, "issues"?: [{ "path": string, "message": string }] }`. See table for statuses. The RPC locks the product, checks buyer/self-purchase/stock and rejects a changed catalog price or invalid pricing snapshot before it inserts the order and decrements stock atomically. POST consumes stock. Never run it against production without explicit approval.
 
-**Member 3 integration:** PR #37 currently calls the old three-argument `place_catalog_order` and has a duplicate pricing source. It must be adapted to the request and RPC contract above before it can merge with Member 4 PR #41.
+**Member 3 integration:** At the reviewed commit 3f2cd23, PR #37 uses quoteCatalogPricing and calls the 12-argument place_catalog_order through place_checkout_order. Its migration re-creates place_catalog_order to allow a null buyer_id for guest checkout. Coordinate the migrations to preserve pricing validation, saved pricing snapshots, atomic stock reduction and guest-checkout support. The request example above describes Member 4's stack; it does not describe Member 3's guest-checkout request.
 
 Multi-product orders, GET order responses and metrics shapes are **not defined by this documentation**. File/review a `Contract change: ...` issue before implementing them; Member 3 owns checkout/order decisions and Member 5 metrics.
 

@@ -1,6 +1,7 @@
 import { ZodError } from "zod";
 import { quoteCatalogPricing } from "@/src/lib/pricing/catalog";
 import { createAdminClient } from "@/src/lib/supabase/admin";
+import { isCatalogPreview } from "./preview-mode";
 import {
   createOrderSchema,
   productFiltersSchema,
@@ -108,6 +109,10 @@ export async function queryProducts(
   }
 
   const filters = parsed.data;
+  if (isCatalogPreview()) {
+    const { filterPreviewProducts } = await import("./mock-data");
+    return { ok: true, data: filterPreviewProducts(filters) };
+  }
   const keywordSource = filters.search ?? filters.query;
   const supabase = createAdminClient();
 
@@ -182,6 +187,14 @@ export async function queryProductById(
     return fail("NOT_FOUND", "Instrument not found.");
   }
 
+  if (isCatalogPreview()) {
+    const { previewProducts, previewSeller } = await import("./mock-data");
+    const product = previewProducts.find((item) => item.id === parsed.data);
+    return product
+      ? { ok: true, data: { ...product, seller: previewSeller, inspection: buildInspectionMetrics(product) } }
+      : fail("NOT_FOUND", "Instrument not found.");
+  }
+
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("products")
@@ -215,6 +228,9 @@ export async function queryProductById(
 export async function placeCatalogOrder(
   rawInput: unknown,
 ): Promise<ActionResult<{ order: Order; listing_status: "available" | "sold" }>> {
+  if (isCatalogPreview()) {
+    return fail("FORBIDDEN", "Sample preview is read-only. Orders are not saved and no payment is taken.");
+  }
   const parsed = createOrderSchema.safeParse(rawInput);
   if (!parsed.success) {
     return fromZodError(parsed.error);

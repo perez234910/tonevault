@@ -1,0 +1,46 @@
+{
+  "checkedAt": "2026-11-08T12:04:59.407575+08:00",
+  "sourceBase": "55ddb5035c1bd31a3ff3b14c8e3c260726913e29",
+  "branch": "g2/m2-search-challenge3",
+  "personalExamples": "Only the three observations and instructions supplied by the student in the current request.",
+  "checks": {
+    "typescript": "passed",
+    "standaloneTsc": "passed",
+    "eslint": "passed",
+    "automatedTests": {
+      "passed": 31,
+      "failed": 0,
+      "skipped": 0
+    },
+    "productionBuild": "passed",
+    "browserCasesPassed": 20,
+    "challenge1PrefixUnchanged": true,
+    "technicalDefectNotesUnchanged": true,
+    "localhostMockMode": false,
+    "serverSecretAbsentFromBrowserChunks": true
+  },
+  "suites": [
+    {
+      "suite": "autocomplete",
+      "passedCases": 8,
+      "artifact": "after/results.json"
+    },
+    {
+      "suite": "storefront",
+      "passedCases": 8,
+      "artifact": "storefront-results.json"
+    },
+    {
+      "suite": "offline-customer",
+      "passedCases": 4,
+      "artifact": "offline-customer-results.json"
+    }
+  ],
+  "databaseWrites": false,
+  "limits": [
+    "Agent-run browser checks, not tests attributed to the student.",
+    "Delayed/500 fixtures are explicit technical tests; main Gibson suggestions use actual Supabase-backed product GET responses.",
+    "WebKit is not a manual Safari or physical-phone/screen-reader test.",
+    "Human PR review and reconciliation with the older PR #19 Challenge 3 draft remain."
+  ]
+}

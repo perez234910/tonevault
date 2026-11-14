@@ -1,0 +1,29 @@
+{
+  "note": "Isolated GET-only local HTTP lifecycle control, no Next.js/application/database/credentials. Matching Playwright 1.65/WebKit r2388.",
+  "cells": [
+    {
+      "replacement": false,
+      "result": {
+        "ok": true,
+        "status": 200
+      },
+      "probeReachedServer": true,
+      "logs": []
+    },
+    {
+      "replacement": true,
+      "result": {
+        "ok": false,
+        "name": "TypeError",
+        "message": "Load failed"
+      },
+      "probeReachedServer": false,
+      "logs": [
+        {
+          "type": "pageerror",
+          "text": "/127.0.0.1:64308/probe due to access control checks."
+        }
+      ]
+    }
+  ]
+}

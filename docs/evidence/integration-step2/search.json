@@ -1,0 +1,101 @@
+{
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 3,
+      "negativeStates": false,
+      "realOnly": true,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 3,
+      "negativeStates": false,
+      "realOnly": true,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 3,
+      "negativeStates": false,
+      "realOnly": true,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 3,
+      "negativeStates": false,
+      "realOnly": true,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 3,
+      "negativeStates": false,
+      "realOnly": true,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 3,
+      "negativeStates": false,
+      "realOnly": true,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 3,
+      "negativeStates": false,
+      "realOnly": true,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "supabase",
+      "realGibsonRecords": 3,
+      "negativeStates": false,
+      "realOnly": true,
+      "apiWrites": 0,
+      "expectedInjectedErrors": 0
+    }
+  ],
+  "note": "Agent-run real-catalog GET tests only. No API interception, delayed/error fixtures, order submissions or database writes. Historical fixtures were not rerun."
+}
