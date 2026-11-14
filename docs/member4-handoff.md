@@ -10,22 +10,24 @@ All three PRs are open, unmerged and need genuine human review. Merge them in or
 
 ## Member 3 coordination before merge
 
-Member 3 PR #37 duplicates the commission/physical-inspection rules and calls the old three-argument order RPC. It cannot be merged unchanged after PR #41.
+At the reviewed commit 3f2cd23, Member 3 PR #37 uses Member 4's pricing contract:
 
-Keep from Member 3 after review:
+- placeCheckoutOrder calls quoteCatalogPricing.
+- place_checkout_order calls the 12-argument place_catalog_order.
+- The earlier checkout_pricing_rules and order_pricing definitions and three-argument RPC call are no longer present.
 
-- verified buyer identity from the bearer token;
-- customer/contact fields;
-- simulated payment method and confirmation flow.
+ACTIVE_PRICING_RULES remains the single source for the 8% commission and the verification fees: none, ₱2,800 remote, and ₱8,500 physical.
 
-Use from Member 4:
+The remaining migration overlap is that #37 re-creates place_catalog_order to allow a null buyer_id for guest checkout.
 
-- `ACTIVE_PRICING_RULES` for 8%, ₱2,800 and ₱8,500;
-- `verification_option` (`none`, `remote`, `physical`);
-- `quoteCatalogPricing` for the server price;
-- the pricing snapshot fields and new `place_catalog_order` signature.
+Coordinate with Member 3 before applying the migrations:
 
-Remove or replace Member 3's duplicate `checkout_pricing_rules`, `order_pricing` trigger/table and old RPC call during the integration PR. Do not merge both pricing systems as-is.
+1. Agree on the migration order.
+2. Ensure the final place_catalog_order preserves pricing validation, pricing snapshot storage, atomic stock reduction and guest-checkout support.
+3. Apply the coordinated migrations to a test database.
+4. Place a guest order and read it back to verify the saved pricing breakdown and stock change.
+
+Migration application and integration testing remain pending. No Member 3 branch was edited by Member 4.
 
 ## Still requires people or deployment access
 
