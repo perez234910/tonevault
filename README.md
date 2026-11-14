@@ -24,7 +24,7 @@ Installed versions audited November 8, 2026 (lockfile authoritative):
 | --- | --- | --- |
 | Next.js App Router | 16.4.5 | Screens and own JSON route handlers in one app |
 | React / React DOM | 19.3.0 | Component UI and client interaction |
-| Tailwind CSS / turbopack integration | 4.3.5 | Existing dark/gold responsive styling |
+| Tailwind CSS / turbopack integration | 4.3.5 | Responsive utility styling and shared design tokens |
 | Supabase JS / Postgres | 2.119.0 / DB version unverified | Persistent relational catalog and transactional inventory RPC |
 | Zod | 4.6.7 | Request input and Browse JSON validation |
 | TypeScript / tsx | 5.9.3 / 4.23.15 | Static checks, seed and Node test loader |
@@ -98,13 +98,13 @@ Architecture: `Browser Browse → own JSON API → catalog validation/queries �
 
 - [Challenge evidence](docs/challenges.md) records visible screenshot facts; resolved deployment remains unverified.
 - Import [Postman collection](docs/postman_collection.json), set the actual `baseUrl` and authorized test buyer. Read stock-consuming POST guidance first. Localhost cannot substitute for deployed course evidence.
-- [Business template](docs/business.md) leaves GC1 quotes, reasoning, owner decisions and revenue examples for students.
+- [Business documentation](docs/business.md): GC1 traceability and customer funnel (Member 2, approved 8 November 2026); revenue rules and examples (Member 4) and dashboard metric decisions (Member 5) remain pending in this branch.
 - [Member 2 handoff](docs/member2-handoff.md) identifies PRs, dependencies and validation limits.
 - [AI-USAGE.md](AI-USAGE.md) records actual assistance and verification; disclose scope on every assisted PR.
 
 ## Changes since GC1
 
-**Needs GC1 verification.** The original proposal was not supplied; no comparison or quote is claimed. Current source demonstrates three DB tables, eight seed definitions, three JSON API handlers, Home/Browse/Detail screens and initial cart functionality. These proposed changes add source-backed documentation here and Browse API consumption in separate PR #18. These are current artifacts, not proof of GC1 differences or merged/deployed completion.
+The original GC1 proposal is mapped to the implementation, with page-referenced quotes, in [business documentation](docs/business.md) §1. Current source demonstrates three DB tables, eight seed definitions, three JSON API handlers, Home/Browse/Detail screens and initial cart functionality. These proposed changes add source-backed documentation here and Browse API consumption in separate PR #18. These are current artifacts, not proof of GC1 differences or merged/deployed completion.
 
 ## Contributing
 
