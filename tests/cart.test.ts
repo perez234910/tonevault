@@ -16,6 +16,25 @@ test("addition and duplicate additions obey dynamic stock without mutating input
   assert.equal(addCartItem([], { ...guitar, stock: 1 })[0].quantity, 1);
 });
 
+test("adding at the stock limit is refused and does not report success", () => {
+  const atLimit = setCartQuantity(addCartItem([], guitar), guitar.id, guitar.stock);
+  assert.equal(atLimit[0].quantity, 3);
+  // Same array reference means "nothing added"; the store relies on this.
+  assert.equal(addCartItem(atLimit, guitar), atLimit);
+  assert.equal(addCartItem(atLimit, { ...guitar, stock: 2 }), atLimit);
+
+  let saved = JSON.stringify([{ ...guitar, quantity: 1 }]);
+  let writes = 0;
+  let notifications = 0;
+  const store = createCartStore(() => ({ getItem: () => saved, setItem: (_key, value) => { saved = value; writes++; } }));
+  store.subscribe(() => { notifications++; });
+  assert.equal(store.addItem({ ...guitar, stock: 2 }), true);
+  assert.equal(store.addItem({ ...guitar, stock: 2 }), false);
+  assert.equal(store.getSnapshot()[0].quantity, 2);
+  assert.equal(writes, 1);
+  assert.equal(notifications, 1);
+});
+
 test("sold, zero stock, fractional stock and malformed products cannot be added", () => {
   for (const stock of [0, -1, 1.5, NaN, Infinity]) assert.deepEqual(addCartItem([], { ...guitar, stock }), []);
   assert.deepEqual(addCartItem([], { ...guitar, status: "sold" }), []);
