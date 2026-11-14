@@ -26,7 +26,7 @@
 | **Target market** | "Primary buyer personas include vintage collectors, professional session musicians, boutique instrument dealers, and serious gear enthusiasts." Psychographics: "Their primary friction is fear" (p. 1, *Target Market Profile*). Porter's assessment recommends an initial focus on premium, vintage and collectible guitars (p. 3). | `scripts/seed.ts` defines 8 Fender, Gibson and PRS listings from 1954–2016 (7 built before 1973), priced ₱168,000–₱3,450,000. The `/browse` price bands in `src/components/filter-bar.tsx` run from "Under ₱250,000" to "₱1,500,000+". The `/` copy reads "Pre-owned guitars, with condition notes and verification details to help you choose." | Catalog content and price filters are set up for high-value pre-owned instruments, not listing volume. This matches the Lean Canvas implication that "Its advantage should come from trust, verification, and specialization" (p. 2). | **Partial.** Serves the buyer personas. There is no seller, dealer or luthier interface. `user_role` (`buyer`, `seller`, `admin`, `luthier`) exists in the schema, but there is no sign-in or account UI. |
 | **Customer problem** | "The secondary guitar market relies on subjective seller descriptions and non-standardized photos on generalist platforms." Payment release means "buyers assume 100% of the financial risk during online transactions" (p. 1, *Problem Statement*). | `products` table (`supabase/migrations/20241107000000_init_core_tables.sql`): `verification_status` enum, `tonevault_score` constrained to 1–100, `condition_notes`. The `products_protect_verification` trigger blocks non-admin changes to status and score, and the insert policy forces new seller listings to `Unverified`. `/products/[id]` has a "Verification documentation" section (`src/components/product-detail-view.tsx`). `src/lib/catalog-photography.ts` labels model images "Model reference only; not a photograph of this vintage listing or verification evidence." | Structured, protected fields replace free-form seller claims on condition and authenticity. The labelled reference images avoid presenting unverified photography as evidence. | **Partial.** Description standardization is implemented. Listing images are model reference photos, not authenticated photographs of the listed instrument. The financial-risk half of the problem is not addressed, because payment is simulated. |
 | **Value proposition** | "ToneVault replaces buyer risk with verified certainty." Each instrument undergoes a "standardized 100-point inspection matrix … to generate a digital ToneVault Score (1–100)". "Transactions are secured by an integrated escrow mechanism" (pp. 1–2, *Value Proposition*). | `VerificationBadge` and `ScoreBadge` (`src/components/verification-badge.tsx`) appear on product cards and on `/products/[id]`. Unscored listings show "Score pending". `buildInspectionMetrics` (`src/lib/catalog/queries.ts`) maps each tier to `inspection_level` (`none`, `remote`, `in_person`). The `escrow_status` enum (`pending` → `payout_released`) is displayed as a progress list on `/confirmation/[id]`. | Buyers see the verification tier and score before they select an instrument. This makes the "verified certainty" promise visible at the point of decision. | **Partial.** Score and tier display are complete. Scores and tiers are **seeded sample values**: there is no inspection-record table or scoring engine (GC1 Phase 2, p. 8). Escrow exists only as status labels. No funds are held or released. Escrow is **Planned (Final Project)**. |
-| **Monetization** | Hybrid model: "8% Marketplace Commission", charged "to sellers for every completed guitar sale"; verification fees; Pro Seller Subscription at "Approximately ₱1,650 per month"; and sponsored listings, where "Any seller may pay to increase the visibility of a listing" (pp. 3–4, *Monetization Models*). | No revenue stream appears in code. `place_catalog_order` (`supabase/migrations/20241108003000_order_quantity_and_stock.sql`) stores `total_amount = price × quantity` and has no commission, fee or subscription fields. The `/checkout` summary lists "Shipping / fees" as "Not calculated". | None yet. The server-side total calculation is the point where a revenue rule could be enforced. | **Not implemented.** Member 4 owns the choice and implementation of the two GC2 revenue features (§3). |
+| **Monetization** | Hybrid model: "8% Marketplace Commission", charged "to sellers for every completed guitar sale"; verification fees; Pro Seller Subscription at "Approximately ₱1,650 per month"; and sponsored listings, where "Any seller may pay to increase the visibility of a listing" (pp. 3–4, *Monetization Models*). | Member 4 PRs [#40](https://github.com/perez234910/tonevault/pull/40)–[#42](https://github.com/perez234910/tonevault/pull/42) implement the two selected GC2 streams: an 8% seller commission and optional verification (`none`, ₱2,800 remote, ₱8,500 physical). `ACTIVE_PRICING_RULES` owns the active values; `calculateOrderPricing` uses integer centavos; the order migration stores the pricing snapshot. | Commission aligns platform income with saved sales. Optional verification monetizes ToneVault's trust service without forcing every buyer to pay for it. The browser cannot choose the price or total. | **Implemented on the unmerged Member 4 stack; not deployed.** The migration has not been applied to the shared database and payment remains simulated. Subscriptions and promoted listings remain out of GC2 scope. |
 | **Core platform features** | Nine features listed under *Core Platform Features* (p. 4). See §1.2. | See §1.2. | See §1.2. | **Partial.** Features 1–4 are partly or largely present. Features 5–9 are simulated, display-only or not implemented. |
 
 ### 1.2 Core platform features (GC1 p. 4)
@@ -83,35 +83,45 @@ Target customer, from GC1 p. 1: buyers of premium pre-owned and vintage guitars 
 
 ## 3. Owner-stated business rules, revenue features and conclusions — Member 4
 
-> **Handoff: pending Member 4.** No content has been supplied. Do not fill these fields with assumed rules, fees, discounts or outcomes. GC1 monetization options for reference only: the commission, verification fee, subscription and sponsored listing streams in §1.1. The choice is Member 4's. An earlier version of this file listed the owner rules under Member 5. Per the current team allocation they belong to Member 4, and Member 5 owns the metric decisions in §4.
+Member 4 scope: The selected GC2 features use GC1's 8% commission and verification service. PRs #40–#42 are open and unmerged. The automated and read-only catalog checks below are real; database migration, deployed order evidence and human review remain pending. Member 3 PR #37 now uses Member 4's pricing contract. The remaining migration overlap concerns guest checkout (§3.4).
 
 ### 3.1 Five owner-stated business rules
 
 | # | Exact rule as stated by the owner | Where enforced (server/DB) | Evidence |
 | --- | --- | --- | --- |
-| 1 | Pending — Member 4 | Pending | Pending |
-| 2 | Pending — Member 4 | Pending | Pending |
-| 3 | Pending — Member 4 | Pending | Pending |
-| 4 | Pending — Member 4 | Pending | Pending |
-| 5 | Pending — Member 4 | Pending | Pending |
+| 1 | Use the current catalog price. Never trust a total sent by the browser. | `pricingQuoteSchema` strips unknown money fields; `quoteCatalogPricing` reads `products.price`; `place_catalog_order` rejects `PRICE_CHANGED`. | `tests/pricing-validation.test.ts` and `tests/pricing-catalog.test.ts`; the read-only live quote ignored `"total": 1`. |
+| 2 | ToneVault keeps 8% of the guitar subtotal from the seller. | `ACTIVE_PRICING_RULES.commissionRateBps = 800`; `calculateOrderPricing`; RPC snapshot equation and database constraint. | `tests/pricing.test.ts` verifies ₱13,440 commission on ₱168,000 and ₱15,600 on ₱195,000. |
+| 3 | Verification is optional: none costs ₱0, remote costs ₱2,800, and physical costs ₱8,500. Charge the selected fee once per order, not once per item. | `VERIFICATION_OPTIONS`, `ACTIVE_PRICING_RULES.verificationFeeCentavos`, and `pricingQuoteSchema`. | Calculator test verifies a two-item order still adds the remote fee only once; validation accepts only the three named options. |
+| 4 | Save the price and revenue breakdown with the order so later rule changes do not rewrite old sales. | Migration fields: `unit_price`, `subtotal_amount`, `verification_option`, `verification_fee`, `commission_rate_bps`, `commission_amount`, `seller_payout_amount`, `platform_revenue_amount`, and `total_amount`. | `tests/revenue-migration.test.ts` and `tests/pricing-types.test.ts`. Historical rows are backfilled as zero-commission snapshots. |
+| 5 | Check stock and the pricing snapshot again when saving; save the order and reduce stock in one transaction. | The service-role-only `place_catalog_order` locks the product `FOR UPDATE`, validates the equations, inserts the order, and updates stock inside one Postgres function. | Migration contract test checks the lock, validation errors, insert/update statements, `SECURITY INVOKER`, revokes, and service-role grant. |
 
 ### 3.2 Two revenue features with worked examples
 
-Each example requires: **agreed rule, real test inputs, server/DB calculation, expected total, actual total, endpoint/test evidence, student explanation**. Both remain pending. Do not invent discounts, fees, outcomes or reasoning before the team chooses and implements the two rules.
+Each example separates the amount paid by the buyer, the seller payout, and ToneVault's recorded revenue. The "actual" values below are from the automated calculator run, not a deployed order or real payment.
 
 | Field | Revenue feature 1 | Revenue feature 2 |
 | --- | --- | --- |
-| Agreed rule | Pending — Member 4 | Pending — Member 4 |
-| Real test inputs | Pending | Pending |
-| Server/DB calculation | Pending | Pending |
-| Expected total | Pending | Pending |
-| Actual total | Pending | Pending |
-| Endpoint/test evidence | Pending | Pending |
-| Student explanation | Pending | Pending |
+| Agreed rule | 8% seller marketplace commission; no buyer add-on selected. | Optional physical verification adds ₱8,500 once; the seller commission remains 8% of the guitar subtotal only. |
+| Real test inputs | PRS Custom 24, catalog price ₱168,000, quantity 1, verification `none`. | Gibson ES-335, catalog price ₱195,000, quantity 1, verification `physical`. |
+| Server/DB calculation | Subtotal ₱168,000 × 8% = ₱13,440 commission. Seller payout = ₱168,000 − ₱13,440 = ₱154,560. | Commission = ₱195,000 × 8% = ₱15,600. Buyer total = ₱195,000 + ₱8,500 = ₱203,500. Seller payout = ₱179,400. Platform revenue snapshot = ₱15,600 + ₱8,500 = ₱24,100. |
+| Expected total | Buyer ₱168,000; seller ₱154,560; ToneVault ₱13,440. | Buyer ₱203,500; seller ₱179,400; ToneVault ₱24,100. |
+| Actual total | Automated result matched: buyer ₱168,000; seller ₱154,560; ToneVault ₱13,440. | Automated result matched: buyer ₱203,500; seller ₱179,400; ToneVault ₱24,100. |
+| Endpoint/test evidence | `tests/pricing.test.ts` case "calculates the PRS 8% commission"; PR #40 verification reports 5/5 tests. | `tests/pricing.test.ts` case "adds physical verification once"; a separate live read-only quote proved the endpoint uses catalog price and ignores a browser total. No order row was written. |
+| Student explanation | ToneVault earns only when a guitar sale is recorded, so its revenue grows with successful marketplace activity. The buyer still pays the listed guitar price when no add-on is chosen. | The add-on earns extra revenue from ToneVault's trust service while remaining optional. The seller commission is still based only on the instrument price, so the verification fee is not charged twice. |
 
 ### 3.3 Business conclusions
 
-Pending — Member 4.
+The 8% commission supports the marketplace model because ToneVault earns more when it helps complete higher-value guitar sales. The verification add-on supports the value proposition because buyers may pay for more confidence before purchasing. Keeping the add-on optional avoids raising every buyer's total.
+
+GC2 stores a transparent snapshot instead of processing money. Therefore these amounts are **simulated or projected revenue**, not cash received. Actual earned-revenue reporting still needs the group's agreed escrow/status rule and Member 5's metrics work.
+
+### 3.4 Member 3 pricing coordination
+
+At the reviewed commit 3f2cd23, Member 3 PR #37 uses Member 4's pricing contract. placeCheckoutOrder calls quoteCatalogPricing, and place_checkout_order calls the 12-argument place_catalog_order. The earlier checkout_pricing_rules and order_pricing definitions and three-argument RPC call are no longer present.
+
+The remaining overlap is in the migrations: #37 re-creates place_catalog_order to allow a null buyer_id for guest checkout. Coordinate the migration order with Member 3 so the final function preserves both Member 4's pricing validation and snapshot storage and Member 3's guest-checkout support.
+
+ACTIVE_PRICING_RULES remains the single source for commission and verification fees. After applying the coordinated migrations to a test database, verify that guest checkout saves the server-calculated pricing snapshot and reduces stock in the same transaction. This integration test remains pending.
 
 ---
 
