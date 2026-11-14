@@ -1,5 +1,7 @@
 # Combined UI status and verification
 
+Current integration preparation is dated 14 November 2026 in [the integration report](owner-interface.md#integration-preparation--14-november-2026) and `docs/evidence/integration-step2/`. The November 8 narrative below is preserved historical evidence, including its then-current branch, catalog and fixture status; it is not a current deployment report. The retained fixture now has two distinct files from foundational #27, and current real-data motion checks do not replace API responses.
+
 Continuation date: November 8, 2026 (Asia/Manila). The interrupted Owner documentation command had not executed. Its content was created with the normal patch editor; no permission or approval restriction was bypassed.
 
 ## Pages and data boundaries

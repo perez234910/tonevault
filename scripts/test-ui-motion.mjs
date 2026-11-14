@@ -67,21 +67,20 @@ async function run(engine, width, reduced = false) {
       await openMenu.tap(); await menu.getByRole("link", { name: "Verified", exact: true }).tap(); await closed(); await page.waitForURL(/verificationStatus=/);
     }
 
-    // Two explicit synthetic slots reuse one valid local asset to test gallery interaction.
-    // They are not extra claimed listing photographs; local query strings are intentionally restricted.
+    // Synthetic two-view fixture exercises gallery keyboard/motion, not extra claimed listing photos.
+    // Two distinct, existing local files without query strings (Next Image rejects unconfigured local queries).
+    // The /preview image is a documented illustration (public/preview/README.md), not a photo of this listing.
+    const galleryFixture = ["/guitars/prs-custom24.jpg", "/preview/guitar-7-detail.jpg"];
     await page.route(`**/api/products/${productPath.split('/').at(-1)}`, async (route) => {
       const response = await route.fetch(); const body = await response.json();
       assert.equal(response.status(), 200, "Synthetic gallery requires a successful underlying sample detail response");
       assert.equal(body.data?.model, "Custom 24");
-      body.data.images = ["/guitars/prs-custom24.jpg", "/guitars/prs-custom24.jpg"];
+      body.data.images = galleryFixture;
       await route.fulfill({json:body});
     });
-    await page.goto(`${base}${productPath}`);
-    try { await page.getByRole("heading", { name: title, exact: true }).waitFor(); }
-    catch (error) {
-      console.log("Gallery fixture failure", { engine, width, reduced, headings: await page.locator("main h1").allTextContents(), errors, consoleErrors });
-      throw error;
-    }
+    await page.goto(`${base}${productPath}`); await page.getByRole("heading", { name: title, exact: true }).waitFor();
+    const gallerySources = await page.locator(".gallery-image").evaluateAll((images) => images.map((image) => new URL(image.currentSrc || image.src, location.href).searchParams.get("url")));
+    assert.deepEqual(gallerySources, galleryFixture, "Gallery must render both distinct fixture images");
     await page.getByRole("button", { name: `Show photo 1 of ${title}`, exact: true }).focus();
     await page.keyboard.press("ArrowRight");
     const thumbnail = page.getByRole("button", { name: `Show photo 2 of ${title}`, exact: true }); assert.equal(await thumbnail.getAttribute("aria-pressed"), "true");
@@ -96,6 +95,7 @@ async function run(engine, width, reduced = false) {
     assert.equal(toast.x < action.x + action.width && toast.x + toast.width > action.x && toast.y < action.y + action.height && toast.y + toast.height > action.y, false, "Toast covers essential Add action");
     await page.getByRole("button", { name: "Dismiss cart confirmation", exact: true }).click();
     const cart = page.locator(".cart-trigger");
+    // A fixed body reports scrollY 0 while locked, so assert what the user sees: nothing behind the drawer moves.
     const viewport = () => page.evaluate(() => ({ x: document.documentElement.clientWidth, y: scrollY, overflow: document.documentElement.style.overflow,
       mainTop: document.querySelector("main").getBoundingClientRect().top,
       headerTop: document.querySelector("header").getBoundingClientRect().top,
@@ -109,6 +109,7 @@ async function run(engine, width, reduced = false) {
     assert.equal(locked.body.position, "fixed");
     assert.ok(Math.abs(locked.mainTop - before.mainTop) < .5, "Opening dialog moved the visible background");
     assert.ok(Math.abs(locked.headerTop - before.headerTop) < .5, "Opening dialog moved the header");
+    assert.equal(await drawer.locator(".drawer-content").evaluate((node) => getComputedStyle(node).overflowY), "auto", "Drawer content must keep its own scrolling");
     await page.mouse.wheel(0, 500);
     await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     const afterWheel = await viewport();
