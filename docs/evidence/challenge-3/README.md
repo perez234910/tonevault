@@ -39,3 +39,11 @@ The browser script uses external Playwright tooling rather than adding it to app
 ## Review boundaries
 
 Branch `g2/m2-search-challenge3` is explicitly stacked on #33. Existing Challenge 1 text and `docs/gc1-ui-findings.md` were checked byte-for-byte against the base. No Challenge 2/4 section was present on this branch. Unmerged PR #19 has a different earlier Challenge 3 draft; genuine integration review should keep the student's selected examples here and preserve unrelated sections from that PR. No PR was merged and no earlier evidence was rewritten.
+
+## Integration preparation — 14 November 2026
+
+Updated #33 is incorporated by normal merge. The selected student-supplied observations/instructions, original screenshots and source snapshots remain intact. `docs/challenges.md` now keeps main's expanded Challenge 1 and human-only Challenge 5, retains the selected three UI examples, and archives #19's earlier workflow failures under a separate historical heading. No new first-person evaluation was generated.
+
+For read-only current-app verification without any runtime response replacement, run `TONEVAULT_TEST_REAL_ONLY=true node scripts/test-search-suggestions.mjs` with the usual browser/base/evidence overrides. This mode skips the historical delayed/error interception block; it still uses actual Gibson records and exercises keyboard, pointer/touch, mobile dialog, filters, option hover and reduced motion. Existing default fixture tests and their historical evidence are preserved, not represented as current real API outcomes. Current structured results are stored separately in `docs/evidence/integration-step2/`.
+
+Current synchronized revision: 35/35 automated tests, typecheck, lint and configured production build passed. Real-only autocomplete matrix passed 8/8 with actual catalog responses, zero injected/delayed/error responses and zero API writes. Final real-data motion matrix passed 9/9. The storefront Chrome matrix passed 4/4; desktop WebKit logs RSC-prefetch access-control console errors in both deployed main and local production and is recorded as failed, not hidden. See the separate integration results for the final diagnostic outcomes. Server credential was absent from all 19 production browser JavaScript files. The preserved two-image fixture is not claimed as a new browser run.

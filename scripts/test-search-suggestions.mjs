@@ -7,6 +7,7 @@ const base = process.env.TONEVAULT_TEST_BASE || "http://localhost:3000";
 const evidence = resolve(process.env.TONEVAULT_SEARCH_EVIDENCE || "docs/evidence/challenge-3/after");
 await mkdir(evidence, { recursive: true });
 const results = [];
+const realOnly = process.env.TONEVAULT_TEST_REAL_ONLY === "true";
 const engines = (process.env.TONEVAULT_TEST_ENGINES || "chromium,webkit").split(",");
 const widths = (process.env.TONEVAULT_TEST_WIDTHS || "1440,390").split(",").map(Number);
 try {
@@ -105,7 +106,7 @@ try {
       }
 
       let negativeStates = false;
-      if (engine === "chromium" && width === 1440 && !reduced) {
+      if (!realOnly && engine === "chromium" && width === 1440 && !reduced) {
         negativeStates = true;
         input = await headerSearch();
         const start = requests.length;
@@ -132,7 +133,7 @@ try {
       }
       assert.deepEqual(errors, []); assert.deepEqual(writes, []);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-      results.push({ engine, width, reduced, passed: true, dataSource: "supabase", realGibsonRecords: body.products.filter(product => product.brand === "Gibson").length, negativeStates, apiWrites: 0, expectedInjectedErrors: expectedFailures.length });
+      results.push({ engine, width, reduced, passed: true, dataSource: "supabase", realGibsonRecords: body.products.filter(product => product.brand === "Gibson").length, negativeStates, realOnly, apiWrites: 0, expectedInjectedErrors: expectedFailures.length });
       console.log(`PASS search ${engine} ${width}px reduced=${reduced}: real GI/Gibson, keyboard/Enter/Escape, listing click/touch, Browse filters and stable nav${negativeStates ? ", debounce/abort/empty/error" : ""}.`);
     } catch (error) {
       for (const context of browser.contexts()) for (const page of context.pages()) {
@@ -142,5 +143,5 @@ try {
     } finally { await browser.close(); }
   }
 } finally {
-  await writeFile(join(evidence, "results.json"), JSON.stringify({ results, note: "Agent-run real-catalog GET tests. Delayed/error fixtures are isolated technical checks, not student observations or actual backend failures. No database writes." }, null, 2) + "\n");
+  await writeFile(join(evidence, "results.json"), JSON.stringify({ results, note: realOnly ? "Agent-run real-catalog GET tests only. No API interception, delayed/error fixtures, order submissions or database writes. Historical fixtures were not rerun." : "Agent-run real-catalog GET tests. Delayed/error fixtures are isolated technical checks, not student observations or actual backend failures. No database writes." }, null, 2) + "\n");
 }

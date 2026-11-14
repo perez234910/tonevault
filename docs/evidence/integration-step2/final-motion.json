@@ -1,0 +1,113 @@
+{
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "real-catalog",
+      "galleryImages": 1,
+      "twoImageKeyboardChecked": false,
+      "stockLimit": 1,
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "real-catalog",
+      "galleryImages": 1,
+      "twoImageKeyboardChecked": false,
+      "stockLimit": 1,
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "real-catalog",
+      "galleryImages": 1,
+      "twoImageKeyboardChecked": false,
+      "stockLimit": 1,
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "real-catalog",
+      "galleryImages": 1,
+      "twoImageKeyboardChecked": false,
+      "stockLimit": 1,
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "real-catalog",
+      "galleryImages": 1,
+      "twoImageKeyboardChecked": false,
+      "stockLimit": 1,
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "real-catalog",
+      "galleryImages": 1,
+      "twoImageKeyboardChecked": false,
+      "stockLimit": 1,
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "dataSource": "real-catalog",
+      "galleryImages": 1,
+      "twoImageKeyboardChecked": false,
+      "stockLimit": 1,
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "real-catalog",
+      "galleryImages": 1,
+      "twoImageKeyboardChecked": false,
+      "stockLimit": 1,
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "dataSource": "real-catalog",
+      "galleryImages": 1,
+      "twoImageKeyboardChecked": false,
+      "stockLimit": 1,
+      "apiWrites": 0,
+      "interceptedResponses": 0
+    }
+  ],
+  "note": "Real catalog only; no API interception, injected gallery views or order writes. Foundational two-image fixture source is retained separately, not claimed executed by this suite."
+}
