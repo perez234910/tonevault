@@ -76,7 +76,7 @@ export function PurchaseBar({ product }: { product: Product }) {
           </button>
         </div>
         <p id="purchase-preview-note" className="text-xs leading-5 text-muted">
-          {sold ? "This instrument is sold out and cannot be added." : "Buy now opens your cart for review. Checkout is not available yet; cart prices are a preview and stock is not reserved."}
+          {sold ? "This instrument is sold out and cannot be added." : "Buy now opens your cart for review. Prices are a preview; no stock is reserved or payment taken."}
         </p>
         <p role="status" aria-live="polite" className="min-h-5 text-xs leading-5 text-accent">{notice ? <span key={notice + items.length} className="ui-reveal inline-flex items-start gap-2"><Icon name="check" size={14} />{notice}</span> : null}</p>
       </div>

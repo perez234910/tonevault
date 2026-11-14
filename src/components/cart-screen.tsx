@@ -105,8 +105,8 @@ export function CartScreen() {
               <div className="flex flex-wrap justify-between gap-3 border-t border-line pt-4 text-base"><dt>Total preview</dt><dd className="text-accent"><span key={subtotal} className="ui-number">{formatPrice(subtotal)}</span></dd></div>
             </dl>
             <p className="mt-4 text-xs leading-6 text-muted">Prices and availability must be confirmed at checkout. Nothing has been reserved.</p>
-            <button type="button" disabled aria-describedby="cart-checkout-note" className="ui-button mt-6 w-full">Checkout unavailable</button>
-            <p id="cart-checkout-note" className="mt-3 text-xs leading-6 text-muted">Checkout is not available yet. Your selection stays saved on this device; no payment is taken or order saved.</p>
+            <Link href="/checkout" aria-describedby="cart-checkout-note" className="ui-button ui-button--primary mt-6 w-full">Continue to checkout</Link>
+            <p id="cart-checkout-note" className="mt-3 text-xs leading-6 text-muted">Review your details in the checkout preview. Ordering and payment remain unavailable.</p>
           </aside>
         </div>
       )}

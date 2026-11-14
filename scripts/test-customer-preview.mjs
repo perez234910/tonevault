@@ -86,7 +86,7 @@ async function run(engine, width) {
     await more.click(); await qty(2);
     const summary = page.getByRole("complementary", { name: "Cart summary" });
     assert.equal(await summary.getByText("₱336,000", { exact: true }).count(), 2);
-    assert.equal(await page.getByRole("button", { name: "Checkout unavailable", exact: true }).isDisabled(), true);
+    await page.getByRole("link", { name: "Continue to checkout", exact: true }).waitFor();
     await page.reload(); await qty(2); await decodedImages(); await overflow(); await shot("cart");
     await page.getByRole("button", { name: `Remove ${prsTitle}`, exact: true }).click();
     await page.getByRole("heading", { name: "Your cart is empty", exact: true }).waitFor();
