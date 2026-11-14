@@ -4,6 +4,7 @@ import { CartProvider } from "@/src/components/cart-context";
 import { SiteFooter } from "@/src/components/site-footer";
 import { SiteHeader } from "@/src/components/site-header";
 import "./globals.css";
+import { isCatalogPreview } from "@/src/lib/catalog/preview-mode";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,14 +32,20 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  const preview = isCatalogPreview();
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <CartProvider>
+        <CartProvider storageKey={preview ? "tonevault-cart-preview" : undefined}>
           <SiteHeader />
+          {preview ? (
+            <aside aria-label="Sample data preview" className="border-b border-gold/30 bg-panel px-4 py-3 text-center text-sm leading-6 text-gold-soft">
+              <strong>Local sample preview</strong> — fictional inventory, grades and illustrative photos. No Supabase connection, saved orders or real payments.
+            </aside>
+          ) : null}
           <main className="flex flex-1 flex-col">{children}</main>
           <SiteFooter />
         </CartProvider>

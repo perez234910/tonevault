@@ -1,5 +1,6 @@
 import { queryProducts } from "@/src/lib/catalog/queries";
 import { actionResultToResponse } from "@/src/lib/catalog/http";
+import { isCatalogPreview } from "@/src/lib/catalog/preview-mode";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -23,6 +24,6 @@ export async function GET(request: Request) {
       products: result.data.products,
       count: result.data.count,
     },
-    { status: 200 },
+    { status: 200, headers: isCatalogPreview() ? { "X-ToneVault-Data-Source": "local-sample", "Cache-Control": "no-store" } : undefined },
   );
 }

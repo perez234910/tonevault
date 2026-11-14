@@ -1,5 +1,6 @@
 import { queryProductById } from "@/src/lib/catalog/queries";
 import { actionResultToResponse } from "@/src/lib/catalog/http";
+import { isCatalogPreview } from "@/src/lib/catalog/preview-mode";
 
 export async function GET(
   _request: Request,
@@ -15,5 +16,10 @@ export async function GET(
   }
 
   const result = await queryProductById(id);
-  return actionResultToResponse(result);
+  const response = actionResultToResponse(result);
+  if (isCatalogPreview()) {
+    response.headers.set("X-ToneVault-Data-Source", "local-sample");
+    response.headers.set("Cache-Control", "no-store");
+  }
+  return response;
 }

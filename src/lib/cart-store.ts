@@ -5,7 +5,7 @@ const EMPTY_CART: CartItem[] = [];
 type StorageAccess = () => Pick<Storage, "getItem" | "setItem">;
 
 /** A per-provider external store keeps hydration and rapid actions consistent. */
-export function createCartStore(getStorage: StorageAccess) {
+export function createCartStore(getStorage: StorageAccess, storageKey = CART_STORAGE_KEY) {
   let items = EMPTY_CART;
   let hydrated = false;
   const listeners = new Set<() => void>();
@@ -14,7 +14,7 @@ export function createCartStore(getStorage: StorageAccess) {
     if (hydrated) return;
     hydrated = true;
     try {
-      items = parseStoredCart(getStorage().getItem(CART_STORAGE_KEY));
+      items = parseStoredCart(getStorage().getItem(storageKey));
     } catch {
       items = EMPTY_CART;
     }
@@ -24,7 +24,7 @@ export function createCartStore(getStorage: StorageAccess) {
     hydrate();
     items = transform(items);
     try {
-      getStorage().setItem(CART_STORAGE_KEY, JSON.stringify(items));
+      getStorage().setItem(storageKey, JSON.stringify(items));
     } catch {
       // Privacy settings/quota must not prevent this tab's cart from working.
     }

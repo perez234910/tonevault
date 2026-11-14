@@ -30,8 +30,8 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [store] = useState(() => createCartStore(() => window.localStorage));
+export function CartProvider({ children, storageKey }: { children: ReactNode; storageKey?: string }) {
+  const [store] = useState(() => createCartStore(() => window.localStorage, storageKey));
   const items = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
   const [isOpen, setIsOpen] = useState(false);
 

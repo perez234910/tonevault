@@ -2,16 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { FeaturedCollection } from "@/src/components/featured-collection";
+import { isCatalogPreview } from "@/src/lib/catalog/preview-mode";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=2000&q=80";
 
 export default function HomePage() {
+  const preview = isCatalogPreview();
   return (
     <div>
       <section className="relative isolate min-h-[78vh] overflow-hidden">
         <Image
-          src={HERO_IMAGE}
+          src={preview ? "/preview/guitar-7.jpg" : HERO_IMAGE}
           alt="Vintage electric guitar in warm stage light"
           fill
           priority
@@ -25,8 +27,9 @@ export default function HomePage() {
             Find your sound. Know its story.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:text-lg">
-            Explore high-end instruments with condition notes, photography, and verification labels.
-            This course prototype uses simulated checkout; no funds are collected or held.
+            {preview
+              ? "Explore the ToneVault customer experience with sample instruments. Inventory, verification grades and photographs are illustrative; no orders or payments are saved."
+              : "Explore high-end instruments with condition notes, photography, and verification labels. This course prototype uses simulated checkout; no funds are collected or held."}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -56,7 +59,7 @@ export default function HomePage() {
         />
         <ValueCard
           title="Protect"
-          copy="Review each instrument before deciding. Checkout is simulated in this course prototype; real payments and escrow are not connected."
+          copy={preview ? "This is a read-only local preview. Cart items are not reserved, checkout is unavailable, and no payment is taken." : "Review each instrument before deciding. Checkout is simulated in this course prototype; real payments and escrow are not connected."}
         />
       </section>
 
