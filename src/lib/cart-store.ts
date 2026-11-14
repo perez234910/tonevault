@@ -32,6 +32,7 @@ export function createCartStore(getStorage: StorageAccess, storageKey = CART_STO
   }
 
   return {
+    isHydrated: () => hydrated,
     getSnapshot: () => items,
     getServerSnapshot: () => EMPTY_CART,
     subscribe(listener: () => void) {

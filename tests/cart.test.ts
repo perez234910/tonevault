@@ -56,6 +56,7 @@ test("subtotals use quantities, cent precision and Philippine pesos", () => {
   assert.deepEqual(cartTotals([]), { quantity: 0, subtotal: 0 });
   assert.equal(lineSubtotal({ price: 0.1, quantity: 3 }), 0.3);
   assert.equal(formatPrice(485000), "₱485,000");
+  assert.equal(formatPrice(168000.5), "₱168,000.50");
 });
 
 test("legacy persistence defaults quantity to one and keeps stock explicitly unknown", () => {

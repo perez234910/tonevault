@@ -4,7 +4,8 @@ export function formatPrice(amount: number) {
   return new Intl.NumberFormat("en-PH", {
     style: "currency",
     currency: "PHP",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
   }).format(amount);
 }
 

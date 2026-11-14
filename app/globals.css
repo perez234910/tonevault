@@ -38,3 +38,10 @@ body {
 ::selection {
   background: color-mix(in oklab, var(--gold) 40%, transparent);
 }
+
+:where(a, button, input, select):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+button:not(:disabled) { cursor: pointer; }

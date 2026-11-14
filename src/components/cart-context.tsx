@@ -16,6 +16,7 @@ export type { CartItem } from "@/src/lib/cart";
 
 type CartContextValue = {
   items: CartItem[];
+  hydrated: boolean;
   isOpen: boolean;
   addItem: (item: CartProduct) => boolean;
   setQuantity: (id: string, quantity: number) => void;
@@ -33,6 +34,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 export function CartProvider({ children, storageKey }: { children: ReactNode; storageKey?: string }) {
   const [store] = useState(() => createCartStore(() => window.localStorage, storageKey));
   const items = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
+  const hydrated = useSyncExternalStore(store.subscribe, store.isHydrated, () => false);
   const [isOpen, setIsOpen] = useState(false);
 
   const addItem = useCallback(
@@ -47,6 +49,7 @@ export function CartProvider({ children, storageKey }: { children: ReactNode; st
   const value = useMemo(
     () => ({
       items,
+      hydrated,
       isOpen,
       addItem,
       removeItem: store.removeItem,
@@ -58,7 +61,7 @@ export function CartProvider({ children, storageKey }: { children: ReactNode; st
       closeCart: () => setIsOpen(false),
       toggleCart: () => setIsOpen((open) => !open),
     }),
-    [addItem, isOpen, items, store],
+    [addItem, hydrated, isOpen, items, store],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
