@@ -15,6 +15,9 @@ export async function CatalogResults({
     verificationStatus: firstParam(params.verificationStatus),
     condition: firstParam(params.condition),
     query: firstParam(params.query),
+    search: firstParam(params.search),
+    status: firstParam(params.status),
+    offset: firstParam(params.offset),
     limit: 24,
   });
 

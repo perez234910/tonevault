@@ -30,6 +30,8 @@ export function FilterBar({ brands }: { brands: string[] }) {
 
   function update(name: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("offset");
+    if (name === "query") params.delete("search");
 
     if (name === "price") {
       params.delete("minPrice");
@@ -58,8 +60,21 @@ export function FilterBar({ brands }: { brands: string[] }) {
       className={`grid gap-3 rounded-2xl border border-line bg-panel p-4 sm:grid-cols-2 lg:grid-cols-4 ${
         pending ? "opacity-70" : ""
       }`}
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={(event) => { event.preventDefault(); update("query", String(new FormData(event.currentTarget).get("query") ?? "").trim()); }}
     >
+      <div className="grid gap-3 sm:col-span-2 sm:grid-cols-[minmax(0,1fr)_10rem_auto] lg:col-span-4">
+        <label className="text-[11px] uppercase tracking-[0.18em] text-muted">
+          Search instruments
+          <input key={searchParams.get("query") ?? searchParams.get("search") ?? ""} name="query" defaultValue={searchParams.get("query") ?? searchParams.get("search") ?? ""} placeholder="Brand, model or finish" className={`${selectClass} mt-2`} />
+        </label>
+        <label className="text-[11px] uppercase tracking-[0.18em] text-muted">
+          Availability
+          <select value={searchParams.get("status") ?? "available"} onChange={(event) => update("status", event.target.value)} className={`${selectClass} mt-2`}>
+            <option value="available">Available</option><option value="sold">Sold out</option>
+          </select>
+        </label>
+        <button type="submit" className="self-end rounded-full border border-gold/50 px-5 py-3 text-sm text-gold-soft">Search</button>
+      </div>
       <label className="block text-[11px] uppercase tracking-[0.18em] text-muted">
         Brand
         <select

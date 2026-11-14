@@ -30,7 +30,7 @@ export default function BrowsePage({ searchParams }: PageProps<"/browse">) {
 
 function GridSkeleton() {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div role="status" aria-label="Loading instruments" aria-busy="true" className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, index) => (
         <div key={index} className="aspect-[3/4] animate-pulse rounded-2xl bg-panel" />
       ))}

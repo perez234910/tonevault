@@ -30,9 +30,9 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="absolute left-3 top-3 flex flex-wrap gap-2">
           <VerificationBadge status={product.verification_status} />
         </div>
-        {product.status === "sold" ? (
+        {product.status === "sold" || product.stock < 1 ? (
           <div className="absolute right-3 top-3 rounded-full bg-background/80 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-gold-soft">
-            Sold
+            Sold out
           </div>
         ) : null}
       </div>
