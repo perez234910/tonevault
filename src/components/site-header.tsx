@@ -5,8 +5,7 @@ import { useCart } from "@/src/components/cart-context";
 import { formatPrice } from "@/src/lib/format";
 
 export function SiteHeader() {
-  const { items, isOpen, toggleCart, closeCart, removeItem } = useCart();
-  const total = items.reduce((sum, item) => sum + item.price, 0);
+  const { items, isOpen, toggleCart, closeCart, removeItem, totalQuantity, subtotal } = useCart();
 
   return (
     <header className="sticky top-0 z-40 border-b border-line/80 bg-background/85 backdrop-blur-md">
@@ -14,7 +13,7 @@ export function SiteHeader() {
         <Link href="/" className="flex items-baseline gap-2">
           <span className="font-serif text-2xl tracking-tight text-foreground">ToneVault</span>
           <span className="hidden text-[10px] uppercase tracking-[0.28em] text-gold sm:inline">
-            Graded · Escrowed
+            Graded · Simulated checkout
           </span>
         </Link>
         <nav className="flex items-center gap-6 text-sm text-muted">
@@ -29,7 +28,7 @@ export function SiteHeader() {
             onClick={toggleCart}
             className="rounded-full border border-line px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-foreground hover:border-gold"
           >
-            Cart {items.length}
+            Cart {totalQuantity}
           </button>
         </nav>
       </div>
@@ -43,14 +42,14 @@ export function SiteHeader() {
             </button>
           </div>
           {items.length === 0 ? (
-            <p className="text-sm text-muted">No instruments reserved yet.</p>
+            <p className="text-sm text-muted">Your cart is empty. Adding an instrument does not reserve stock.</p>
           ) : (
             <ul className="space-y-3">
               {items.map((item) => (
                 <li key={item.id} className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm text-foreground">{item.title}</p>
-                    <p className="text-xs text-muted">{formatPrice(item.price)}</p>
+                    <p className="text-xs text-muted">{item.quantity} × {formatPrice(item.price)}</p>
                   </div>
                   <button
                     type="button"
@@ -65,7 +64,7 @@ export function SiteHeader() {
           )}
           {items.length > 0 ? (
             <p className="mt-4 border-t border-line pt-3 text-sm text-foreground">
-              Escrow total {formatPrice(total)}
+              Total preview {formatPrice(subtotal)}
             </p>
           ) : null}
         </div>

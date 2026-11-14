@@ -4,24 +4,24 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 
-export type CartItem = {
-  id: string;
-  title: string;
-  price: number;
-  image: string | null;
-  finish: string | null;
-};
+import { cartTotals, type CartItem, type CartProduct } from "@/src/lib/cart";
+import { createCartStore } from "@/src/lib/cart-store";
+export type { CartItem } from "@/src/lib/cart";
 
 type CartContextValue = {
   items: CartItem[];
   isOpen: boolean;
-  addItem: (item: CartItem) => void;
+  addItem: (item: CartProduct) => boolean;
+  setQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
+  totalQuantity: number;
+  subtotal: number;
   removeItem: (id: string) => void;
   openCart: () => void;
   closeCart: () => void;
@@ -29,47 +29,19 @@ type CartContextValue = {
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
-const STORAGE_KEY = "tonevault-cart";
-
-function readStoredItems(): CartItem[] {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as CartItem[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [store] = useState(() => createCartStore(() => window.localStorage));
+  const items = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    setItems(readStoredItems());
-  }, []);
-
-  const persist = useCallback((next: CartItem[]) => {
-    setItems(next);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  }, []);
-
   const addItem = useCallback(
-    (item: CartItem) => {
-      persist(items.some((existing) => existing.id === item.id) ? items : [...items, item]);
-      setIsOpen(true);
+    (item: CartProduct) => {
+      const added = store.addItem(item);
+      if (added) setIsOpen(true);
+      return added;
     },
-    [items, persist],
-  );
-
-  const removeItem = useCallback(
-    (id: string) => {
-      persist(items.filter((item) => item.id !== id));
-    },
-    [items, persist],
+    [store],
   );
 
   const value = useMemo(
@@ -77,12 +49,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items,
       isOpen,
       addItem,
-      removeItem,
+      removeItem: store.removeItem,
+      setQuantity: store.setQuantity,
+      clearCart: store.clearCart,
+      totalQuantity: cartTotals(items).quantity,
+      subtotal: cartTotals(items).subtotal,
       openCart: () => setIsOpen(true),
       closeCart: () => setIsOpen(false),
       toggleCart: () => setIsOpen((open) => !open),
     }),
-    [addItem, isOpen, items, removeItem],
+    [addItem, isOpen, items, store],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

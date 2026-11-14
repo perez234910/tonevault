@@ -8,7 +8,7 @@ import type { Product } from "@/src/types";
 export function PurchaseBar({ product }: { product: Product }) {
   const { addItem, items } = useCart();
   const [notice, setNotice] = useState<string | null>(null);
-  const sold = product.status === "sold";
+  const sold = product.status !== "available" || product.stock < 1;
   const inCart = items.some((item) => item.id === product.id);
   const title = instrumentTitle(product);
 
@@ -19,21 +19,16 @@ export function PurchaseBar({ product }: { product: Product }) {
       price: product.price,
       image: product.images[0] ?? null,
       finish: product.finish,
+      stock: product.stock,
+      status: product.status,
     };
   }
 
   function addToCart() {
     if (sold) return;
-    addItem(cartPayload());
-    setNotice("Held in your vault cart. Escrow starts at checkout.");
-  }
-
-  function buyNow() {
-    if (sold) return;
-    addItem(cartPayload());
-    setNotice(
-      "Buy now queued. Complete escrow checkout to mark this listing sold and release funds only after delivery approval.",
-    );
+    if (addItem(cartPayload())) {
+      setNotice("Saved in your cart within available stock. Cart items are not reserved; prices and stock are checked at checkout.");
+    }
   }
 
   return (
@@ -44,16 +39,16 @@ export function PurchaseBar({ product }: { product: Product }) {
             <p className="text-[11px] uppercase tracking-[0.2em] text-gold">Asking price</p>
             <p className="font-serif text-3xl text-foreground">{formatPrice(product.price)}</p>
           </div>
-          <p className="text-xs text-muted">{sold ? "No longer available" : "Protected by ToneVault escrow"}</p>
+          <p className="text-xs text-muted">{sold ? "No longer available" : "Simulated checkout · no real payment"}</p>
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <button
             type="button"
-            disabled={sold}
-            onClick={buyNow}
+            disabled
+            aria-describedby="checkout-unavailable"
             className="rounded-full bg-gold px-5 py-3 text-sm font-medium text-background disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Buy now
+            Checkout coming soon
           </button>
           <button
             type="button"
@@ -64,7 +59,10 @@ export function PurchaseBar({ product }: { product: Product }) {
             {inCart ? "In cart" : "Add to cart"}
           </button>
         </div>
-        {notice ? <p className="text-xs leading-5 text-muted">{notice}</p> : null}
+        <p id="checkout-unavailable" className="text-xs leading-5 text-muted">
+          Simulated checkout is not available yet. You can save an instrument in your cart without reserving it.
+        </p>
+        <p role="status" aria-live="polite" className="text-xs leading-5 text-muted">{notice}</p>
       </div>
     </div>
   );
