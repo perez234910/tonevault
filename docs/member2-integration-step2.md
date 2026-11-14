@@ -1,5 +1,7 @@
 # Member 2 integration preparation — 14 November 2026
 
+**Focused WebKit follow-up:** the access-control signature is now attributed to an upstream WebKit document-replacement classification bug, using a same-origin ToneVault trace and an independent app-free GET control. Correctly matched Playwright 1.65.0 / WebKit r2388 still reproduces it. Complete strict-assertion reruns finished **6/8 passed, 2/8 failed** both locally and on Vercel. Application/UI/prefetch configuration and every original test assertion are unchanged. See [root cause, evidence and reproduction](evidence/webkit-prefetch-investigation/README.md). The earlier results below are retained as historical verification, not relabeled as passing.
+
 The four existing PR branches were updated in dependency order against foundational main `3bcd3dbad2a8e826dd0b6a72edd1190a9cf0eac3` using normal merge commits. No PR was approved or merged; no main push, force push, branch deletion, database write or migration was performed. Other members' branches were inspected read-only. The original worktree remains on its original branch and commit; work used `/private/tmp/tonevault-step2-20261114`.
 
 ## Prepared PRs
@@ -36,7 +38,7 @@ Browser matrices used Chrome/WebKit at 1440/390px with normal/reduced motion, pl
 | Final local storefront | Chrome 4/4; WebKit diagnostic 2/4 | All navigation/filter/cart assertions completed; WebKit reduced-motion desktop/mobile cases logged RSC-prefetch access-control console errors and are failed. Earlier runs also failed desktop normal motion, so this is intermittent. |
 | Deployed foundational storefront | Chrome 4/4; WebKit diagnostic 2/4 | Real-catalog light-mode Home/Browse/Detail/Cart verified. Both desktop WebKit cases failed console checks; both mobile WebKit cases passed. |
 
-The strict storefront suite stops on its first console error. Separate diagnostic runs completed the remaining WebKit cases, kept all console errors and marked affected cases `passed:false`; they did not convert failures into passes. The cause of the speculative RSC-prefetch errors is unresolved. They occur on deployed main and local production; no uncaught page errors or fake API successes were used to dismiss them. This report does not claim a clean all-browser production result.
+The strict storefront suite stops on its first console error. Separate diagnostic runs completed the remaining WebKit cases, kept all console errors and marked affected cases `passed:false`; they did not convert failures into passes. At the time of the initial integration run the cause was unresolved; the focused follow-up above establishes the document-replacement mechanism. They occur on deployed main and local production; no uncaught page errors or fake API successes were used to dismiss them. This report does not claim a clean all-browser production result.
 
 The corrected foundational two-distinct-image fixture and `ModalShell` source match main exactly. The fixture was retained, not rerun with synthetic runtime responses. Positive guest/account response doubles are isolated unit tests, not real saved orders. No order submission or privileged Owner request was sent.
 
@@ -50,4 +52,4 @@ Confirmation validates saved data and can retain a guest cookie when the endpoin
 
 Owner data remains unavailable. Member 5's endpoints require administrator bearer authentication, expose different orders/metrics envelopes and currently report null platform revenue. Agree revenue recognition with Member 4, admin/seller scope, pagination and admin order-detail authorization. Preserve Member 3's reviewed POST logic when combining the shared orders route, and preserve the established UI. See [Owner contracts](owner-interface.md).
 
-Next: teammate run/substantive review of each focused diff; investigate the intermittent WebKit prefetch console issue; then integrate reviewed backend contracts with explicit no-write test limits. No integration merge is performed by this task.
+Next: teammate run/substantive review of each focused diff; track the documented upstream WebKit document-replacement bug and validate a corrected engine without weakening guards; then integrate reviewed backend contracts with explicit no-write test limits. No integration merge is performed by this task.

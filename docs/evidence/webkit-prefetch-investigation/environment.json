@@ -1,0 +1,32 @@
+{
+  "appHead": "13d24863aafdf20cc6429965b3414a1197267f3d",
+  "node": "v26.7.0",
+  "playwrightVersion": "1.65.0",
+  "webkitRevision": "2388",
+  "webkitBrowserVersion": "27.2",
+  "previousPlaywrightVersion": "1.63.0",
+  "previousExpectedWebkitRevision": "2359",
+  "previousActualWebkitRevision": "2388",
+  "mismatchRuledOut": true,
+  "sourceSHA256": {
+    "scripts/test-storefront.mjs": "e56c0ccd5f57e96f73632e191562ecca51d01bae5aba8641e171d79bd6a84c56",
+    "next.config.ts": "8e5da1d1192e612fdf3109df7864e97f8b3ae7861901af366eb05e00d0f6921c",
+    "package.json": "d47291a7b3badc9a07712ce308c2c91eb935615b368f4c28770f78cfdc606cf1",
+    "package-lock.json": "c818e22237224a788fcd987a2349c4fb050fa53011bb40bb65bec6ded9797090"
+  },
+  "localMatrixExitCode": 1,
+  "note": "No application, dependency, prefetch setting, original test flow/assertion or console listener was changed. Full-matrix collection only catches case failures outside the original assertions and returns failure after all cases.",
+  "deployedMatrixExitCode": 1,
+  "fullMatrixResults": {
+    "local": {
+      "passed": 6,
+      "failed": 2,
+      "cases": 8
+    },
+    "deployed": {
+      "passed": 6,
+      "failed": 2,
+      "cases": 8
+    }
+  }
+}

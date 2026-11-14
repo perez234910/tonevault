@@ -1,0 +1,22 @@
+{
+  "originalSourceSHA256": "e56c0ccd5f57e96f73632e191562ecca51d01bae5aba8641e171d79bd6a84c56",
+  "assertionCount": 13,
+  "assertionCallsUnchanged": true,
+  "generatedMatrixSourcesChecked": 2,
+  "preservedAssertions": [
+    "assert.equal(response.status(),200)",
+    "assert.equal(products.ok,true)",
+    "assert.ok(headline<=42)",
+    "assert.ok(box.x>=0&&box.x+box.width<=width+.5)",
+    "assert.equal(await page.locator('select:not([aria-hidden=\"true\"]):visible').count(),0)",
+    "assert.equal(await page.locator('.nav-surface').count(),0)",
+    "assert.deepEqual(await item.evaluate(n=>({bg:getComputedStyle(n).backgroundColor,transform:getComputedStyle(n).transform})),before)",
+    "assert.ok(instrument,'Storefront requires an available catalog instrument')",
+    "assert.equal(await quantity.inputValue(),'1')",
+    "assert.equal(await quantity.inputValue(),'1')",
+    "assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true)",
+    "assert.deepEqual(errors,[])",
+    "assert.deepEqual(writes,[])"
+  ],
+  "note": "All original assertion call expressions, including console/page errors and zero API writes, match exactly and in order. The collector changes only the outer per-case catch and throws AggregateError afterward."
+}

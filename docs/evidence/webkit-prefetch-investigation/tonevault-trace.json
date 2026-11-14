@@ -1,0 +1,263 @@
+{
+  "applicationHead": "13d24863aafdf20cc6429965b3414a1197267f3d",
+  "matchedPlaywright": "1.65.0",
+  "webkitRevision": "2388",
+  "hardNavigation": {
+    "sequence": 182,
+    "at": 1794629855446,
+    "event": "hard-navigation-start",
+    "from": "http://127.0.0.1:3109/browse",
+    "to": "http://127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836"
+  },
+  "oldDocumentPagehide": {
+    "sequence": 205,
+    "at": 1794629855477,
+    "event": "document",
+    "document": "http://127.0.0.1:3109/browse",
+    "now": 159,
+    "timeOrigin": 1794629855308,
+    "phase": "pagehide"
+  },
+  "sameOriginRscStartsDuringReplacement": 7,
+  "accessControlPageErrorsBeforePagehide": 7,
+  "events": [
+    {
+      "sequence": 182,
+      "at": 1794629855446,
+      "event": "hard-navigation-start",
+      "from": "http://127.0.0.1:3109/browse",
+      "to": "http://127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836"
+    },
+    {
+      "sequence": 183,
+      "at": 1794629855456,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 147,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-response",
+      "url": "http://127.0.0.1:3109/?_rsc=jrqPsPni7ljHh19F",
+      "status": 200
+    },
+    {
+      "sequence": 184,
+      "at": 1794629855461,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 151,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-start",
+      "url": "http://127.0.0.1:3109/?_rsc=mSrccQ23RgGOH2nQ",
+      "sameOrigin": true
+    },
+    {
+      "sequence": 185,
+      "at": 1794629855463,
+      "event": "pageerror",
+      "text": "/127.0.0.1:3109/?_rsc=mSrccQ23RgGOH2nQ due to access control checks."
+    },
+    {
+      "sequence": 186,
+      "at": 1794629855465,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 151,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-start",
+      "url": "http://127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=jrqPsPni7ljHh19F",
+      "sameOrigin": true
+    },
+    {
+      "sequence": 187,
+      "at": 1794629855466,
+      "event": "pageerror",
+      "text": "/127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=jrqPsPni7ljHh19F due to access control checks."
+    },
+    {
+      "sequence": 188,
+      "at": 1794629855466,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-start",
+      "url": "http://127.0.0.1:3109/products/5c7b4d20-ebd5-4ff4-886e-750259aeccce?_rsc=jrqPsPni7ljHh19F",
+      "sameOrigin": true
+    },
+    {
+      "sequence": 189,
+      "at": 1794629855467,
+      "event": "pageerror",
+      "text": "/127.0.0.1:3109/products/5c7b4d20-ebd5-4ff4-886e-750259aeccce?_rsc=jrqPsPni7ljHh19F due to access control checks."
+    },
+    {
+      "sequence": 190,
+      "at": 1794629855468,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-start",
+      "url": "http://127.0.0.1:3109/products/b2ba9952-2b7a-4ad2-b84e-06ef55be7bd9?_rsc=jrqPsPni7ljHh19F",
+      "sameOrigin": true
+    },
+    {
+      "sequence": 191,
+      "at": 1794629855469,
+      "event": "pageerror",
+      "text": "/127.0.0.1:3109/products/b2ba9952-2b7a-4ad2-b84e-06ef55be7bd9?_rsc=jrqPsPni7ljHh19F due to access control checks."
+    },
+    {
+      "sequence": 192,
+      "at": 1794629855470,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-reject",
+      "url": "http://127.0.0.1:3109/?_rsc=mSrccQ23RgGOH2nQ",
+      "name": "TypeError",
+      "message": "Load failed",
+      "signalAborted": null
+    },
+    {
+      "sequence": 193,
+      "at": 1794629855470,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-reject",
+      "url": "http://127.0.0.1:3109/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=jrqPsPni7ljHh19F",
+      "name": "TypeError",
+      "message": "Load failed",
+      "signalAborted": null
+    },
+    {
+      "sequence": 194,
+      "at": 1794629855471,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-reject",
+      "url": "http://127.0.0.1:3109/products/5c7b4d20-ebd5-4ff4-886e-750259aeccce?_rsc=jrqPsPni7ljHh19F",
+      "name": "TypeError",
+      "message": "Load failed",
+      "signalAborted": null
+    },
+    {
+      "sequence": 195,
+      "at": 1794629855471,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-reject",
+      "url": "http://127.0.0.1:3109/products/b2ba9952-2b7a-4ad2-b84e-06ef55be7bd9?_rsc=jrqPsPni7ljHh19F",
+      "name": "TypeError",
+      "message": "Load failed",
+      "signalAborted": null
+    },
+    {
+      "sequence": 196,
+      "at": 1794629855471,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-start",
+      "url": "http://127.0.0.1:3109/products/5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9?_rsc=jrqPsPni7ljHh19F",
+      "sameOrigin": true
+    },
+    {
+      "sequence": 197,
+      "at": 1794629855471,
+      "event": "pageerror",
+      "text": "/127.0.0.1:3109/products/5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9?_rsc=jrqPsPni7ljHh19F due to access control checks."
+    },
+    {
+      "sequence": 198,
+      "at": 1794629855472,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-start",
+      "url": "http://127.0.0.1:3109/products/f3621316-61d6-4549-9f54-132d7bfc00ad?_rsc=jrqPsPni7ljHh19F",
+      "sameOrigin": true
+    },
+    {
+      "sequence": 199,
+      "at": 1794629855472,
+      "event": "pageerror",
+      "text": "/127.0.0.1:3109/products/f3621316-61d6-4549-9f54-132d7bfc00ad?_rsc=jrqPsPni7ljHh19F due to access control checks."
+    },
+    {
+      "sequence": 200,
+      "at": 1794629855472,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-start",
+      "url": "http://127.0.0.1:3109/products/426f1b1f-4203-4907-8db2-598c1a373d16?_rsc=jrqPsPni7ljHh19F",
+      "sameOrigin": true
+    },
+    {
+      "sequence": 201,
+      "at": 1794629855472,
+      "event": "pageerror",
+      "text": "/127.0.0.1:3109/products/426f1b1f-4203-4907-8db2-598c1a373d16?_rsc=jrqPsPni7ljHh19F due to access control checks."
+    },
+    {
+      "sequence": 202,
+      "at": 1794629855472,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-reject",
+      "url": "http://127.0.0.1:3109/products/5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9?_rsc=jrqPsPni7ljHh19F",
+      "name": "TypeError",
+      "message": "Load failed",
+      "signalAborted": null
+    },
+    {
+      "sequence": 203,
+      "at": 1794629855473,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 152,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-reject",
+      "url": "http://127.0.0.1:3109/products/f3621316-61d6-4549-9f54-132d7bfc00ad?_rsc=jrqPsPni7ljHh19F",
+      "name": "TypeError",
+      "message": "Load failed",
+      "signalAborted": null
+    },
+    {
+      "sequence": 204,
+      "at": 1794629855473,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 153,
+      "timeOrigin": 1794629855308,
+      "phase": "rsc-reject",
+      "url": "http://127.0.0.1:3109/products/426f1b1f-4203-4907-8db2-598c1a373d16?_rsc=jrqPsPni7ljHh19F",
+      "name": "TypeError",
+      "message": "Load failed",
+      "signalAborted": null
+    },
+    {
+      "sequence": 205,
+      "at": 1794629855477,
+      "event": "document",
+      "document": "http://127.0.0.1:3109/browse",
+      "now": 159,
+      "timeOrigin": 1794629855308,
+      "phase": "pagehide"
+    }
+  ],
+  "note": "Observation-only fetch wrapper forwarded requests, responses and rejections unchanged. Assertions stayed strict. Independent uninstrumented reproduction is also recorded."
+}

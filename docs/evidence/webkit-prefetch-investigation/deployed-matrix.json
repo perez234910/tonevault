@@ -1,0 +1,67 @@
+{
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": false,
+      "passed": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   '/tonevault-seven.vercel.app/?_rsc=mSrccQ23RgGOH2nQ due to access control checks.',\n+   '/tonevault-seven.vercel.app/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',\n+   '/tonevault-seven.vercel.app/browse?brand=Gibson&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',\n+   '/tonevault-seven.vercel.app/browse?brand=PRS&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',\n+   '/tonevault-seven.vercel.app/browse?status=sold&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'\n+ ]\n- []\n"
+      }
+    },
+    {
+      "engine": "webkit",
+      "width": 1440,
+      "reduced": true,
+      "passed": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   '/tonevault-seven.vercel.app/products/5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9?_rsc=jrqPsPni7ljHh19F due to access control checks.',\n+   '/tonevault-seven.vercel.app/products/f3621316-61d6-4549-9f54-132d7bfc00ad?_rsc=jrqPsPni7ljHh19F due to access control checks.',\n+   '/tonevault-seven.vercel.app/products/426f1b1f-4203-4907-8db2-598c1a373d16?_rsc=jrqPsPni7ljHh19F due to access control checks.',\n+   '/tonevault-seven.vercel.app/products/eb36c18b-1431-4546-916b-310f37d64836?_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',\n+   '/tonevault-seven.vercel.app/browse?brand=Gibson&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',\n+   '/tonevault-seven.vercel.app/browse?brand=PRS&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.',\n+   '/tonevault-seven.vercel.app/browse?status=sold&_rsc=z0wyxdPQsgvRMaIZ due to access control checks.'\n+ ]\n- []\n"
+      }
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": false,
+      "dataSource": "supabase",
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "reduced": true,
+      "dataSource": "supabase",
+      "passed": true
+    }
+  ],
+  "note": "Read-only browser verification. No order submissions or database writes. WebKit is not a manual Safari test."
+}
