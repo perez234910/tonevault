@@ -22,6 +22,18 @@ Import `docs/postman_collection.json`; set `baseUrl` to a real verified deployme
 5.![An order with a required field missing](<Screenshot 2026-11-08 at 00.56.47.png>)
 6.![A search that matches nothing](<Screenshot 2026-11-08 at 01.10.31.png>)
 
+# Challenge 2 — Trace a guest order
+
+## Hand-drawn order flow
+
+![Page 1 of the hand-drawn order flow, from the checkout button to the saved order response](evidence/challenge-2/order-flow-page-1.jpg)
+
+![Page 2 of the hand-drawn order flow, from loading the saved order to displaying the confirmation](evidence/challenge-2/order-flow-page-2.jpg)
+
+## Deployed order evidence
+
+Pending the deployed checkout run. Record the method, URL, request body, HTTP status, and response, then document the file or function at each step through to the rendered confirmation.
+
 # Challenge 3 — Overrule the AI
 
 The first-person observations and decisions below were supplied by me after personally reviewing the interface. The Git inspections and automated checks are the agent's technical verification; they do not imply that I ran those scripts or conducted additional usability tests.
