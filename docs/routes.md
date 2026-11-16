@@ -124,10 +124,22 @@ Success (200):
 
 `{ "ok": true, "metrics": { ... } }`
 
-Missing or invalid authentication returns 401; an authenticated non-admin returns 403. Configuration or database failures return 500.
+The metrics are calculated as follows:
 
-These endpoints expose private owner data and must not be treated as public catalog endpoints. Sample mode does not display owner metrics or sample sales figures.
+| Metric | Calculation |
+| --- | --- |
+| Total orders | Number of saved orders |
+| Total order value | Sum of saved `total_amount` values |
+| Platform revenue | Sum of saved `platform_revenue_amount` values |
+| Average order value | Total order value divided by the number of saved orders; returns 0 when there are no orders |
+| Top-selling guitars | Sum of saved order quantities per product; includes all products tied for the highest quantity |
+| Low-stock listings | Available products with stock at or below the configured threshold, currently 2 units |
 
+Missing or invalid authentication returns 401. An authenticated non-admin returns 403. Supabase configuration or database failures return 500.
+
+Both owner endpoints (`GET /api/orders` and `GET /api/metrics`) require an administrator's Supabase access token in the `Authorization: Bearer <token>` header. They expose private owner data and must not be treated as public catalog endpoints.
+
+Sample mode does not display owner metrics or sample sales figures.
 ## Screens
 
 | Route | State / owner |
