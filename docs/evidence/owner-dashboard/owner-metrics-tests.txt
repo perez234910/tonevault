@@ -1,0 +1,12 @@
+✔ calculates saved orders, order value, average and platform revenue (8.1245ms)
+✔ includes every top-selling tie and identifies available low-stock guitars (0.453084ms)
+✔ handles an empty order history and zero-stock available products (0.099167ms)
+✔ accepts a custom low-stock threshold (0.068708ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88.705167

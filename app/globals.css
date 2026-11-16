@@ -229,7 +229,7 @@ svg { flex-shrink: 0; }
 .owner-metrics dd { margin-top: 15px; font-size: 28px; line-height: 1; }
 .metric-unavailable { display: block; margin-top: 10px; font-size: 11px; color: var(--muted); }
 .owner-table-scroll { overflow-x: auto; width: 100%; }
-.owner-table { border-collapse: collapse; width: 100%; text-align: left; }
+.owner-table { border-collapse: collapse; width: 100%; min-width: 680px; text-align: left; }
 .owner-table th { font-weight: 400; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); padding: 0 10px 16px 0; }
 .owner-table td { border-bottom: 1px solid var(--line); }
 .owner-orders-unavailable { text-align: center; padding: 44px 16px; }

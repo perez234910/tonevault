@@ -1,0 +1,46 @@
+{
+  "results": [
+    {
+      "engine": "webkit",
+      "skipped": true,
+      "reason": "Playwright WebKit is frozen on macOS 14 ARM64."
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": false,
+      "passed": true,
+      "ownerState": "sample-mode-unavailable",
+      "invalidOrderReferenceHandled": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "reduced": true,
+      "passed": true,
+      "ownerState": "sample-mode-unavailable",
+      "invalidOrderReferenceHandled": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": false,
+      "passed": true,
+      "ownerState": "sample-mode-unavailable",
+      "invalidOrderReferenceHandled": true,
+      "ownerDataRequests": 0
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "reduced": true,
+      "passed": true,
+      "ownerState": "sample-mode-unavailable",
+      "invalidOrderReferenceHandled": true,
+      "ownerDataRequests": 0
+    }
+  ],
+  "note": "Exact expected owner state and saved-order reference validation. No authenticated private-data requests were made."
+}

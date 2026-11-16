@@ -9,8 +9,8 @@ Contract for the integrated checkout in PRs #37–#39. “Implemented” describ
 | `POST /api/orders` | Implemented (one cart line) | `app/api/orders/route.ts` → `placeCheckoutOrder` | 201 saved; 400 invalid input; 401 invalid login or unauthenticated legacy request; 403 self-purchase or read-only preview; 404 missing product/buyer; 409 stock or price conflict; 500 save failure |
 | `GET /api/orders/:id` | Implemented — Member 3 | `app/api/orders/[id]/route.ts` | 200 accessible saved order; 401 missing access or invalid login; 404 invalid ID, missing order or order outside the caller’s access; 500 lookup failure |
 | `POST /api/pricing/quote` | Implemented — Member 4 | `app/api/pricing/quote/route.ts` → `quoteCatalogPricing` | 200 quote; 400 invalid JSON/fields/quantity/option; 404 missing product; 409 unavailable/insufficient stock; 500 JSON `INTERNAL_ERROR` |
-| `GET /api/orders` | Planned — Member 3 | No GET export | Required 200 list including empty; shape/authentication needs agreement |
-| `GET /api/metrics` | Planned — Member 5 | No handler | Required 200; calculations/shape/owner access need agreement |
+| `GET /api/orders` | Implemented — Member 5 | `app/api/orders/route.ts` → `requireAdmin` | 200 saved orders, including empty; 401 missing/invalid session; 403 authenticated non-admin; 500 configuration/query failure |
+| `GET /api/metrics` | Implemented — Member 5 | `app/api/metrics/route.ts` → `requireAdmin`, `calculateOwnerMetrics` | 200 owner metrics; 401 missing/invalid session; 403 authenticated non-admin; 500 configuration/query failure |
 
 Catalog/Detail/Order functions and validation: `src/lib/catalog/queries.ts`, `src/lib/validators/catalog.ts`. Status mapping: `src/lib/catalog/http.ts`. Pricing uses `src/lib/pricing/rules.ts`, `calculate.ts`, and `catalog.ts`. The quote route returns JSON for unexpected pricing failures. Checkout derives buyer identity from a verified session. Guest orders have a null buyer ID.
 
@@ -100,6 +100,46 @@ Checkout returns 201 with `{ "ok": true, "data": { "order": Order } }`. The tran
 
 See [Member 3 checkout and order details](member3-orders.md) for the complete pricing and response contract.
 
+## Owner dashboard — administrator endpoints
+
+Both endpoints require an administrator's Supabase access token:
+
+`Authorization: Bearer <admin access token>`
+
+### List saved orders
+
+`GET /api/orders` returns the saved orders accessible to the administrator.
+
+Success (200):
+
+`{ "ok": true, "orders": [Order] }`
+
+An empty order list returns 200 with `"orders": []`. Missing or invalid authentication returns 401; an authenticated non-admin returns 403.
+
+### Owner metrics
+
+`GET /api/metrics` returns calculated owner dashboard metrics based on saved orders and product records.
+
+Success (200):
+
+`{ "ok": true, "metrics": { ... } }`
+
+The metrics are calculated as follows:
+
+| Metric | Calculation |
+| --- | --- |
+| Total orders | Number of saved orders |
+| Total order value | Sum of saved `total_amount` values |
+| Platform revenue | Sum of saved `platform_revenue_amount` values |
+| Average order value | Total order value divided by the number of saved orders; returns 0 when there are no orders |
+| Top-selling guitars | Sum of saved order quantities per product; includes all products tied for the highest quantity |
+| Low-stock listings | Available products with stock at or below the configured threshold, currently 2 units |
+
+Missing or invalid authentication returns 401. An authenticated non-admin returns 403. Supabase configuration or database failures return 500.
+
+Both owner endpoints (`GET /api/orders` and `GET /api/metrics`) require an administrator's Supabase access token in the `Authorization: Bearer <token>` header. They expose private owner data and must not be treated as public catalog endpoints.
+
+Sample mode does not display owner metrics or sample sales figures.
 ## Screens
 
 | Route | State / owner |
@@ -110,4 +150,4 @@ See [Member 3 checkout and order details](member3-orders.md) for the complete pr
 | `/cart` | Cart with quantity and stock controls |
 | `/checkout` | Four-step guest or account checkout |
 | `/confirmation` and `/confirmation/:id` | Order lookup and protected confirmation |
-| `/owner` | Owner interface; live data integration is separate |
+| `/owner` | Implemented — Member 5; administrator sign-in, saved orders and owner metrics; sample mode displays a read-only notice |

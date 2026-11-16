@@ -22,6 +22,7 @@ test("only an explicit ready empty result displays no orders", () => {
 test("ready presentation uses the supplied saved amount and reference, not fabricated metrics", () => {
   const html = renderToStaticMarkup(createElement(OwnerOrders, { state: { status: "ready", orders: [{ id: "30000000-0000-4000-8000-000000000099", instrument: "Synthetic test instrument", quantity: 2, total_amount: 321.09, escrow_status: "pending" }] } }));
   assert.match(html, /₱321\.09/);
-  assert.match(html, /confirmation\/30000000-0000-4000-8000-000000000099/);
+  assert.match(html, /<td><span>30000000…<\/span><\/td>/);
+  assert.doesNotMatch(html, /confirmation\//);
   assert.doesNotMatch(html, /No orders yet/);
 });
