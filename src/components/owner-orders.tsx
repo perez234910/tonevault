@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { formatPrice } from "@/src/lib/format";
 import type { Order } from "@/src/types";
 import { Icon } from "./ui/icon";
@@ -15,7 +14,7 @@ export function OwnerOrders({ state }: { state: OwnerOrdersState }) {
       <caption className="sr-only">Owner orders</caption>
       <thead><tr>{["Reference", "Instrument", "Quantity", "Saved total", "Status"].map(label => <th key={label} scope="col">{label}</th>)}</tr></thead>
       <tbody>{state.status === "ready" && state.orders.length ? state.orders.map(order => <tr key={order.id}>
-        <td><Link href={`/confirmation/${encodeURIComponent(order.id)}`} className="ui-link">{order.id.slice(0, 8)}…</Link></td>
+        <td><span>{order.id.slice(0, 8)}…</span></td>
         <td>{order.instrument}</td><td>{order.quantity}</td><td>{formatPrice(order.total_amount)}</td><td>{order.escrow_status.replaceAll("_", " ")}</td>
       </tr>) : <tr><td colSpan={5}><div className="owner-orders-unavailable" role={state.status === "error" ? "alert" : "status"}>
         <Icon name="bag" size={24} />

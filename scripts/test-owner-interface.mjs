@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
+import { release } from "node:os";
 
 const pw = await import(
   process.env.TONEVAULT_PLAYWRIGHT_MODULE || "playwright"
@@ -14,9 +15,31 @@ const evidence = resolve(
 await mkdir(evidence, { recursive: true });
 
 const results = [];
+const expectedOwnerState = process.env.TONEVAULT_EXPECT_OWNER_STATE;
+
+assert.ok(
+  expectedOwnerState === "sample" || expectedOwnerState === "login",
+  'Set TONEVAULT_EXPECT_OWNER_STATE to "sample" or "login" before running this test.'
+);
+
+let completed = false;
 
 try {
-  for (const engine of ["chromium", "webkit"]) {
+  const frozenWebKit =
+    process.platform === "darwin" &&
+    process.arch === "arm64" &&
+    Number(release().split(".")[0]) === 23;
+
+  if (frozenWebKit) {
+    results.push({
+      engine: "webkit",
+      skipped: true,
+      reason: "Playwright WebKit is frozen on macOS 14 ARM64."
+    });
+    console.log("SKIP owner webkit: frozen browser on macOS 14 ARM64.");
+  }
+
+  for (const engine of (frozenWebKit ? ["chromium"] : ["chromium", "webkit"])) {
     for (const width of [1440, 390]) {
       for (const reduced of (engine === "chromium" ? [false, true] : [false])) {
         const browser = await pw[engine].launch({ timeout: 30000, ...(
@@ -48,44 +71,45 @@ try {
             }
           });
 
-          // Check either valid Owner Dashboard state.
+          // Require the exact owner state for the environment under test.
           await page.goto(base + "/owner");
-
           await page
             .getByRole("heading", { name: "Your storefront", exact: true })
             .waitFor();
 
-          await page.waitForFunction(() => {
-            const text = document.body.innerText;
-            return (
-              text.includes("Owner Login") ||
-              text.includes("Owner dashboard unavailable")
-            );
-          });
+          const expectedHeading =
+            expectedOwnerState === "sample"
+              ? page.getByRole("heading", {
+                  name: "Owner dashboard unavailable in sample mode",
+                  exact: true,
+                })
+              : page.getByRole("heading", {
+                  name: "Owner Login",
+                  exact: true,
+                });
 
-          const loginHeading = page.getByRole("heading", {
-            name: "Owner Login",
-            exact: true,
-          });
+          const unexpectedHeading =
+            expectedOwnerState === "sample"
+              ? page.getByRole("heading", {
+                  name: "Owner Login",
+                  exact: true,
+                })
+              : page.getByRole("heading", {
+                  name: "Owner dashboard unavailable in sample mode",
+                  exact: true,
+                });
 
-          const unavailableHeading = page.getByRole("heading", {
-            name: /^Owner dashboard unavailable(?: in sample mode)?$/,
-          });
-
-          const loginVisible = (await loginHeading.count()) > 0;
-          const unavailableVisible = (await unavailableHeading.count()) > 0;
-
-          assert.notEqual(
-            loginVisible,
-            unavailableVisible,
-            "Expected exactly one valid owner state: login or unavailable."
+          await expectedHeading.waitFor();
+          assert.equal(
+            await unexpectedHeading.count(),
+            0,
+            `Unexpected owner screen for ${expectedOwnerState} mode.`
           );
 
           let ownerState;
 
-          if (loginVisible) {
+          if (expectedOwnerState === "login") {
             ownerState = "signed-out-login";
-
             await page.getByLabel("Email address").waitFor();
             await page.getByLabel("Password").waitFor();
             await page
@@ -96,7 +120,6 @@ try {
               await page.getByLabel("Email address").getAttribute("type"),
               "email"
             );
-
             assert.equal(
               await page.getByLabel("Password").getAttribute("type"),
               "password"
@@ -106,16 +129,14 @@ try {
               name: "Owner dashboard navigation",
               exact: true,
             });
-
             await nav.getByRole("link", { name: "Overview", exact: true }).waitFor();
             await nav.getByRole("link", { name: "Orders", exact: true }).waitFor();
           } else {
-            ownerState = "unavailable";
-
+            ownerState = "sample-mode-unavailable";
             assert.equal(
               await page.getByLabel("Email address").count(),
               0,
-              "Login form must not appear when Supabase is unavailable."
+              "Login form must not appear in sample mode."
             );
           }
 
@@ -190,7 +211,7 @@ try {
     JSON.stringify(
       {
         results,
-        note: "Owner login or unavailable state and saved-order reference validation. No authenticated private-data requests were made.",
+        note: "Exact expected owner state and saved-order reference validation. No authenticated private-data requests were made.",
       },
       null,
       2
