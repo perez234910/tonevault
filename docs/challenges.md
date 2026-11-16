@@ -32,7 +32,7 @@ Import `docs/postman_collection.json`; set `baseUrl` to a real verified deployme
 
 ## Deployed order evidence
 
-On 16 November 2026 at 10:37 p.m. Manila time, a Chromium browser test placed one guest order for the seeded 1964 Gibson ES-335 on the deployed ToneVault site. The checkout used synthetic contact and shipping details, simulated GCash, and no additional verification. The saved order showed a total of **₱195,000** and status **pending**.
+A test placed one guest order for the seeded 1964 Gibson ES-335 on the deployed ToneVault site. It ran in Chromium on 16 November 2026 at 10:37 p.m. Manila time. The checkout used synthetic contact and shipping details, simulated GCash, and no additional verification. The saved order showed a total of **₱195,000** and status **pending**.
 
 | Browser action | Method and URL | Observed status and response |
 | --- | --- | --- |
