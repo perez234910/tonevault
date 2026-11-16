@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { VERIFICATION_OPTIONS } from "@/src/lib/pricing/rules";
 
 const emptyToUndefined = (value: unknown) => {
   if (value === "" || value === null || value === undefined) {
@@ -74,18 +75,27 @@ const requiredQuantity = z.preprocess((value) => {
   return value;
 }, z.number({ error: "quantity is required" }).int().positive("Quantity must be greater than 0"));
 
-export const createOrderSchema = z.object({
-  product_id: z
-    .string({ error: "product_id is required" })
-    .min(1, "product_id is required")
-    .uuid("product_id must be a valid UUID"),
+export const verificationOptionSchema = z.enum(VERIFICATION_OPTIONS);
+
+const productIdField = z
+  .string({ error: "product_id is required" })
+  .min(1, "product_id is required")
+  .uuid("product_id must be a valid UUID");
+
+export const pricingQuoteSchema = z.object({
+  product_id: productIdField,
+  quantity: requiredQuantity,
+  verification_option: verificationOptionSchema.optional().default("none"),
+});
+
+export const createOrderSchema = pricingQuoteSchema.extend({
   buyer_id: z
     .string({ error: "buyer_id is required" })
     .min(1, "buyer_id is required")
     .uuid("buyer_id must be a valid UUID"),
-  quantity: requiredQuantity,
 });
 
 export type ProductFiltersInput = z.input<typeof productFiltersSchema>;
 export type ProductFilters = z.output<typeof productFiltersSchema>;
+export type PricingQuoteInput = z.infer<typeof pricingQuoteSchema>;
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;

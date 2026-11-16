@@ -1,4 +1,5 @@
 import { ZodError } from "zod";
+import { quoteCatalogPricing } from "@/src/lib/pricing/catalog";
 import { createAdminClient } from "@/src/lib/supabase/admin";
 import { isCatalogPreview } from "./preview-mode";
 import {
@@ -58,6 +59,13 @@ function mapOrder(row: Order): Order {
   return {
     ...row,
     quantity: Number(row.quantity),
+    unit_price: Number(row.unit_price),
+    subtotal_amount: Number(row.subtotal_amount),
+    verification_fee: Number(row.verification_fee),
+    commission_rate_bps: Number(row.commission_rate_bps),
+    commission_amount: Number(row.commission_amount),
+    seller_payout_amount: Number(row.seller_payout_amount),
+    platform_revenue_amount: Number(row.platform_revenue_amount),
     total_amount: Number(row.total_amount),
   };
 }
@@ -228,11 +236,31 @@ export async function placeCatalogOrder(
     return fromZodError(parsed.error);
   }
 
+  const quote = await quoteCatalogPricing({
+    product_id: parsed.data.product_id,
+    quantity: parsed.data.quantity,
+    verification_option: parsed.data.verification_option,
+  });
+
+  if (!quote.ok) {
+    return quote;
+  }
+
+  const pricing = quote.data.pricing;
   const supabase = createAdminClient();
   const { data, error } = await supabase.rpc("place_catalog_order", {
     p_product_id: parsed.data.product_id,
     p_buyer_id: parsed.data.buyer_id,
     p_quantity: parsed.data.quantity,
+    p_verification_option: pricing.verification_option,
+    p_expected_unit_price: pricing.unit_price,
+    p_subtotal_amount: pricing.subtotal_amount,
+    p_verification_fee: pricing.verification_fee,
+    p_commission_rate_bps: pricing.commission_rate_bps,
+    p_commission_amount: pricing.commission_amount,
+    p_seller_payout_amount: pricing.seller_payout_amount,
+    p_platform_revenue_amount: pricing.platform_revenue_amount,
+    p_total_amount: pricing.total_amount,
   });
 
   if (error) {
@@ -263,6 +291,20 @@ export async function placeCatalogOrder(
 
     if (message.includes("CANNOT_PURCHASE_OWN_LISTING")) {
       return fail("FORBIDDEN", "Sellers cannot purchase their own listings.");
+    }
+
+    if (message.includes("PRICE_CHANGED")) {
+      return fail(
+        "CONFLICT",
+        "The catalog price changed. Request a fresh quote.",
+      );
+    }
+
+    if (message.includes("INVALID_PRICING_SNAPSHOT")) {
+      return fail(
+        "INTERNAL_ERROR",
+        "The server could not verify the pricing breakdown.",
+      );
     }
 
     return fail("INTERNAL_ERROR", message);
