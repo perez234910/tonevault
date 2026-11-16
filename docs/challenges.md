@@ -32,7 +32,19 @@ Import `docs/postman_collection.json`; set `baseUrl` to a real verified deployme
 
 ## Deployed order evidence
 
-Pending the deployed checkout run. Record the method, URL, request body, HTTP status, and response, then document the file or function at each step through to the rendered confirmation.
+Pending one approved test order on the deployed checkout. Record the actual method, URL, request body, HTTP status, and response from the browser’s Network tab. Use demo contact details and omit authorization headers and cookie values from the evidence.
+
+### Order path in the checkout source
+
+| Step | File and function | What happens |
+| --- | --- | --- |
+| Place order | `src/components/checkout-screen.tsx` → `placeOrder()` | Sends `POST /api/orders` with the selected product, quantity, verification option, reviewed total, contact and shipping details, and simulated payment choice. |
+| Route | `app/api/orders/route.ts` → `POST()` | Parses the JSON. For a guest order, it creates order access and calls `placeCheckoutOrder()` with a null buyer ID and the access token hash. |
+| Validation and pricing | `src/lib/catalog/checkout-orders.ts` → `placeCheckoutOrder()` | Validates the fields with `checkoutOrderSchema.safeParse()` from `src/lib/validators/checkout-order.ts`. It recomputes pricing with `quoteCatalogPricing()` from `src/lib/pricing/catalog.ts` and returns a conflict before writing if the reviewed total has changed. |
+| Database write | `supabase/migrations/20261109063222_member3_checkout_details.sql` → `place_checkout_order()` → `place_catalog_order()` | Locks the product row with `FOR UPDATE`, checks stock and the price breakdown, inserts the order into `public.orders`, and updates `public.products` to reduce stock. The wrapper inserts private details and the token hash into `public.order_checkout_details` in the same transaction. |
+| Response and redirect | `app/api/orders/route.ts` → `POST()`, then `checkout-screen.tsx` → `placeOrder()` | The success branch returns the saved buyer-facing order as JSON and sets an order-specific HttpOnly cookie. The browser removes the purchased quantity from the cart and opens `/confirmation/[id]`. |
+| Saved order lookup | `src/lib/order-client.ts` → `fetchSavedOrder()`, then `app/api/orders/[id]/route.ts` → `GET()` | The browser requests `GET /api/orders/[id]`. The route checks the guest cookie against the stored hash before returning the matching saved order. |
+| Confirmation | `app/confirmation/[id]/page.tsx` → `ConfirmationPage()` → `OrderReference()`, then `src/components/confirmation-screen.tsx` → `ConfirmationScreen()` | The screen loads the saved order and renders its reference, quantity, saved total, and status. |
 
 # Challenge 3 — Overrule the AI
 
