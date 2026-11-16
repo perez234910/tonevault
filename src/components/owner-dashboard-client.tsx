@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 
-import { supabase } from "@/src/lib/supabase";
+import { getBrowserSupabase } from "@/src/lib/supabase-browser";
 import { formatPrice } from "@/src/lib/format";
 import type { OwnerMetrics } from "@/src/lib/owner/metrics";
 import type { EscrowStatus } from "@/src/types";
@@ -48,6 +48,7 @@ export function OwnerDashboardClient() {
   const [orders, setOrders] = useState<OwnerOrderRow[]>([]);
   const [metrics, setMetrics] = useState<OwnerMetrics | null>(null);
   const [error, setError] = useState("");
+  const browserClient = getBrowserSupabase();
 
   const loadDashboard = useCallback(async (token: string) => {
     setLoading(true);
@@ -111,12 +112,13 @@ export function OwnerDashboardClient() {
 
   useEffect(() => {
     let active = true;
+    if (!browserClient) return;
+    const authenticatedClient = browserClient;
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, nextSession) => {
+    } = authenticatedClient.auth.onAuthStateChange((event, nextSession) => {
       if (!active) return;
-
       setSession(nextSession);
 
       if (
@@ -136,7 +138,7 @@ export function OwnerDashboardClient() {
     async function initializeSession() {
       try {
         const { data, error: sessionError } =
-          await supabase.auth.getSession();
+          await authenticatedClient.auth.getSession();
 
         if (!active) return;
 
@@ -169,7 +171,7 @@ export function OwnerDashboardClient() {
       active = false;
       subscription.unsubscribe();
     };
-  }, [loadDashboard]);
+  }, [loadDashboard, browserClient]);
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -177,8 +179,10 @@ export function OwnerDashboardClient() {
     setError("");
 
     try {
+      const client = getBrowserSupabase();
+      if (!client) throw new Error("Supabase is not configured.");
       const { error: loginError } =
-        await supabase.auth.signInWithPassword({
+        await client.auth.signInWithPassword({
           email,
           password,
         });
@@ -196,11 +200,29 @@ export function OwnerDashboardClient() {
   }
 
   async function handleLogout() {
-    const { error: logoutError } = await supabase.auth.signOut();
+    const client = getBrowserSupabase();
+    if (!client) {
+      setError("Supabase is not configured.");
+      return;
+    }
+    const { error: logoutError } = await client.auth.signOut();
 
     if (logoutError) {
       setError(logoutError.message);
     }
+  }
+
+  if (!browserClient) {
+    return (
+      <section className="owner-access-note" role="status">
+        <h2 className="text-xl">Owner dashboard unavailable</h2>
+        <p className="mt-3 text-sm leading-6 text-muted">
+          Supabase is not configured. Set the required public environment
+          variables to enable administrator login and saved marketplace
+          analytics.
+        </p>
+      </section>
+    );
   }
 
   if (initializing) {

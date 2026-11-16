@@ -19,11 +19,11 @@ try {
   for (const engine of ["chromium", "webkit"]) {
     for (const width of [1440, 390]) {
       for (const reduced of (engine === "chromium" ? [false, true] : [false])) {
-        const browser = await pw[engine].launch(
+        const browser = await pw[engine].launch({ timeout: 30000, ...(
           engine === "chromium" && process.env.TONEVAULT_BROWSER_EXECUTABLE
             ? { executablePath: process.env.TONEVAULT_BROWSER_EXECUTABLE }
-            : {}
-        );
+            : {})
+        });
 
         try {
           const page = await browser.newPage({
@@ -48,40 +48,78 @@ try {
             }
           });
 
-          // Check the signed-out Owner Dashboard.
+          // Check either valid Owner Dashboard state.
           await page.goto(base + "/owner");
 
           await page
             .getByRole("heading", { name: "Your storefront", exact: true })
             .waitFor();
 
-          await page
-            .getByRole("heading", { name: "Owner Login", exact: true })
-            .waitFor();
+          await page.waitForFunction(() => {
+            const text = document.body.innerText;
+            return (
+              text.includes("Owner Login") ||
+              text.includes("Owner dashboard unavailable")
+            );
+          });
 
-          await page.getByLabel("Email address").waitFor();
-          await page.getByLabel("Password").waitFor();
-          await page.getByRole("button", { name: "Sign in", exact: true }).waitFor();
-
-          assert.equal(
-            await page.getByLabel("Email address").getAttribute("type"),
-            "email"
-          );
-
-          assert.equal(
-            await page.getByLabel("Password").getAttribute("type"),
-            "password"
-          );
-
-          const nav = page.getByRole("navigation", {
-            name: "Owner dashboard navigation",
+          const loginHeading = page.getByRole("heading", {
+            name: "Owner Login",
             exact: true,
           });
 
-          await nav.getByRole("link", { name: "Overview", exact: true }).waitFor();
-          await nav.getByRole("link", { name: "Orders", exact: true }).waitFor();
+          const unavailableHeading = page.getByRole("heading", {
+            name: /^Owner dashboard unavailable(?: in sample mode)?$/,
+          });
 
-          // Signed-out visitors must not receive private owner API data.
+          const loginVisible = (await loginHeading.count()) > 0;
+          const unavailableVisible = (await unavailableHeading.count()) > 0;
+
+          assert.notEqual(
+            loginVisible,
+            unavailableVisible,
+            "Expected exactly one valid owner state: login or unavailable."
+          );
+
+          let ownerState;
+
+          if (loginVisible) {
+            ownerState = "signed-out-login";
+
+            await page.getByLabel("Email address").waitFor();
+            await page.getByLabel("Password").waitFor();
+            await page
+              .getByRole("button", { name: "Sign in", exact: true })
+              .waitFor();
+
+            assert.equal(
+              await page.getByLabel("Email address").getAttribute("type"),
+              "email"
+            );
+
+            assert.equal(
+              await page.getByLabel("Password").getAttribute("type"),
+              "password"
+            );
+
+            const nav = page.getByRole("navigation", {
+              name: "Owner dashboard navigation",
+              exact: true,
+            });
+
+            await nav.getByRole("link", { name: "Overview", exact: true }).waitFor();
+            await nav.getByRole("link", { name: "Orders", exact: true }).waitFor();
+          } else {
+            ownerState = "unavailable";
+
+            assert.equal(
+              await page.getByLabel("Email address").count(),
+              0,
+              "Login form must not appear when Supabase is unavailable."
+            );
+          }
+
+          // Signed-out or unavailable visitors must not receive private owner API data.
           assert.deepEqual(api, []);
 
           // Check responsive layout.
@@ -94,14 +132,12 @@ try {
 
           if (engine === "chromium" && !reduced) {
             await page.evaluate(() => window.scrollTo(0, 0));
-
             await page.screenshot({
               path: join(evidence, `${width}-owner.png`),
               fullPage: true,
               caret: "initial",
             });
           }
-
           // Check the saved-order lookup separately.
           await page.goto(base + "/confirmation");
 
@@ -133,13 +169,13 @@ try {
             width,
             reduced,
             passed: true,
-            signedOutOwnerLogin: true,
+            ownerState,
             invalidOrderReferenceHandled: true,
             ownerDataRequests: 0,
           });
 
           console.log(
-            `PASS owner ${engine} ${width}px reduced=${reduced}: login, responsive layout, saved-order validation, no private API requests.`
+            `PASS owner ${engine} ${width}px reduced=${reduced}: ${ownerState}, responsive layout, saved-order validation, no private API requests.`
           );
         } finally {
           await browser.close();
@@ -147,13 +183,14 @@ try {
       }
     }
   }
+  completed = true;
 } finally {
-  await writeFile(
+  if (completed) await writeFile(
     join(evidence, "results.json"),
     JSON.stringify(
       {
         results,
-        note: "Signed-out owner login and saved-order reference validation. No authenticated private-data requests were made.",
+        note: "Owner login or unavailable state and saved-order reference validation. No authenticated private-data requests were made.",
       },
       null,
       2
