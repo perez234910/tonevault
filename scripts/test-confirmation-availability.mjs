@@ -25,19 +25,19 @@ try {
       await page.getByLabel('Order reference', { exact: true }).fill(id);
       await page.getByRole('button', { name: 'Find order', exact: true }).click();
       await page.waitForURL(base + '/confirmation/' + id);
-      await page.getByRole('heading', { name: 'Order confirmation unavailable', exact: true }).waitFor();
+      await page.getByRole('heading', { name: 'Order access required', exact: true }).waitFor();
       assert.equal(await page.getByRole('heading', { name: 'Your saved order', exact: true }).count(), 0);
       await page.getByRole('button', { name: 'Retry order lookup', exact: true }).click();
-      await page.getByRole('heading', { name: 'Order confirmation unavailable', exact: true }).waitFor();
+      await page.getByRole('heading', { name: 'Order access required', exact: true }).waitFor();
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
       assert.deepEqual(errors, []);
       assert.deepEqual(writes, []);
-      assert.ok(expectedHttpFailures.includes(404));
-      if (engine === 'chromium' && !reduced) await page.screenshot({ path: join(evidence, `${width}-unavailable.png`), fullPage: true });
+      assert.ok(expectedHttpFailures.includes(401));
+      if (engine === 'chromium' && !reduced) await page.screenshot({ path: join(evidence, `${width}-access-required.png`), fullPage: true });
       results.push({ engine, width, reduced, passed: true, expectedHttpFailures, apiWrites: 0, interceptedResponses: 0 });
-      console.log(`PASS confirmation availability ${engine} ${width}px reduced=${reduced}: validation, actual missing endpoint, retry, no false confirmation.`);
+      console.log(`PASS confirmation availability ${engine} ${width}px reduced=${reduced}: validation, actual unauthenticated endpoint, retry, no false confirmation.`);
     } finally { await browser.close(); }
   }
 } finally {
-  await writeFile(join(evidence, 'results.json'), JSON.stringify({ results, note: 'Actual current-app behavior only. No API responses intercepted, orders created, private records read, or successful transactions simulated. Guest/account adapter contracts are separate isolated unit tests; backend integration remains pending.' }, null, 2) + '\n');
+  await writeFile(join(evidence, 'results.json'), JSON.stringify({ results, note: 'Actual current-app behavior only. No API responses intercepted, orders created, private records read, or successful transactions simulated. Guest/account adapter contracts are separate isolated unit tests; authenticated browser access is covered separately.' }, null, 2) + '\n');
 }

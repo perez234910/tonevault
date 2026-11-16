@@ -109,3 +109,14 @@ test("store hydrates before writes, preserves rapid actions, clears, and tolerat
   assert.equal(denied.getSnapshot()[0].quantity, 1);
   assert.equal(denied.addItem({ ...guitar, stock: 0 }), false);
 });
+
+test("subtracts only the purchased units from the latest cart", () => {
+  const store = createCartStore(() => ({ getItem: () => null, setItem: () => {} }));
+  const listing = { id: "checkout-line", title: "Test guitar", price: 100, image: null, finish: null, stock: 3, status: "available" as const };
+  store.addItem(listing);
+  store.addItem(listing);
+  store.addItem({ ...listing, id: "other" });
+  store.addItem(listing);
+  store.removePurchasedQuantity(listing.id, 2);
+  assert.deepEqual(store.getSnapshot().map(({ id, quantity }) => [id, quantity]), [[listing.id, 1], ["other", 1]]);
+});

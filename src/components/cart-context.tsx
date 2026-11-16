@@ -53,5 +53,5 @@ export function useCart() {
   const items = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
   const hydrated = useSyncExternalStore(store.subscribe, store.isHydrated, serverHydrationSnapshot);
   const totals = useMemo(() => cartTotals(items), [items]);
-  return { ...actions, items, hydrated, totalQuantity: totals.quantity, subtotal: totals.subtotal };
+  return { ...actions, removePurchasedQuantity: store.removePurchasedQuantity, items, hydrated, totalQuantity: totals.quantity, subtotal: totals.subtotal };
 }

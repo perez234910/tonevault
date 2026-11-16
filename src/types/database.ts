@@ -1,5 +1,6 @@
 import type {
   EscrowStatus,
+  CheckoutDetails,
   Order,
   OrderInsert,
   OrderUpdate,
@@ -46,6 +47,12 @@ export interface Database {
           },
         ];
       };
+      order_checkout_details: {
+        Row: CheckoutDetails;
+        Insert: CheckoutDetails;
+        Update: Partial<CheckoutDetails>;
+        Relationships: [];
+      };
       orders: {
         Row: Order;
         Insert: OrderInsert;
@@ -68,10 +75,15 @@ export interface Database {
         ];
       };
     };
-    Views: {
-      [_ in never]: never;
-    };
+    Views: { [_ in never]: never; };
     Functions: {
+      place_checkout_order: {
+        Args: Database["public"]["Functions"]["place_catalog_order"]["Args"] & {
+          p_full_name: string; p_email: string; p_phone: string;
+          p_address: string; p_payment_method: string; p_guest_token_hash: string | null;
+        };
+        Returns: Order;
+      };
       is_admin: {
         Args: Record<PropertyKey, never>;
         Returns: boolean;
@@ -79,7 +91,7 @@ export interface Database {
       place_catalog_order: {
         Args: {
           p_product_id: string;
-          p_buyer_id: string;
+          p_buyer_id: string | null;
           p_quantity: number;
           p_verification_option: VerificationOption;
           p_expected_unit_price: number;

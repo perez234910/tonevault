@@ -48,6 +48,10 @@ export function createCartStore(getStorage: StorageAccess, storageKey = CART_STO
       return true;
     },
     setQuantity: (id: string, quantity: number) => update((current) => setCartQuantity(current, id, quantity)),
+    removePurchasedQuantity: (id: string, purchased: number) => update((current) => {
+      const remaining = (current.find(item => item.id === id)?.quantity ?? 0) - purchased;
+      return remaining > 0 ? setCartQuantity(current, id, remaining) : removeCartItem(current, id);
+    }),
     removeItem: (id: string) => update((current) => removeCartItem(current, id)),
     clearCart: () => update(() => []),
   };

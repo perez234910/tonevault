@@ -48,7 +48,7 @@ export type Product = {
 export type Order = {
   id: string;
   product_id: string;
-  buyer_id: string;
+  buyer_id: string | null;
   quantity: number;
   unit_price: number;
   subtotal_amount: number;
@@ -126,3 +126,13 @@ export type ActionResult<T> =
       code: CatalogErrorCode;
       issues?: { path: string; message: string }[];
     };
+
+export type CheckoutDetails = {
+  guest_token_hash: string | null;
+  order_id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  payment_method: "simulated_card" | "simulated_gcash";
+};
