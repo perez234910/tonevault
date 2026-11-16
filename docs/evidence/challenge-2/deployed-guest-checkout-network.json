@@ -1,0 +1,109 @@
+{
+  "deployment": "https://tonevault-seven.vercel.app",
+  "recordedAt": "2026-11-16T14:37:36.150Z",
+  "browser": "Chromium",
+  "requests": [
+    {
+      "method": "POST",
+      "url": "https://tonevault-seven.vercel.app/api/orders",
+      "requestBody": {
+        "product_id": "5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9",
+        "quantity": 1,
+        "verification_option": "none",
+        "expected_total_amount": 195000,
+        "customer": {
+          "full_name": "ToneVault Demo Buyer",
+          "email": "checkout.qa@example.invalid",
+          "phone": "09000000000",
+          "address": "123 Demo Street, Pasig, 1600, Philippines"
+        },
+        "payment_method": "simulated_gcash",
+        "payment_confirmed": true
+      },
+      "status": 201,
+      "responseBody": {
+        "ok": true,
+        "data": {
+          "order": {
+            "id": "8dfa6fa6-14b7-4c50-a6ad-00f55a3630ca",
+            "product_id": "5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9",
+            "buyer_id": null,
+            "quantity": 1,
+            "unit_price": 195000,
+            "subtotal_amount": 195000,
+            "verification_option": "none",
+            "verification_fee": 0,
+            "total_amount": 195000,
+            "escrow_status": "pending",
+            "tracking_number": null,
+            "created_at": "2026-11-16T14:37:45.995437+00:00"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://tonevault-seven.vercel.app/api/orders/8dfa6fa6-14b7-4c50-a6ad-00f55a3630ca",
+      "requestBody": null,
+      "status": 200,
+      "responseBody": {
+        "ok": true,
+        "data": {
+          "order": {
+            "id": "8dfa6fa6-14b7-4c50-a6ad-00f55a3630ca",
+            "product_id": "5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9",
+            "buyer_id": null,
+            "quantity": 1,
+            "unit_price": 195000,
+            "subtotal_amount": 195000,
+            "verification_option": "none",
+            "verification_fee": 0,
+            "total_amount": 195000,
+            "escrow_status": "pending",
+            "tracking_number": null,
+            "created_at": "2026-11-16T14:37:45.995437+00:00"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://tonevault-seven.vercel.app/api/orders/8dfa6fa6-14b7-4c50-a6ad-00f55a3630ca",
+      "requestBody": null,
+      "status": 200,
+      "responseBody": {
+        "ok": true,
+        "data": {
+          "order": {
+            "id": "8dfa6fa6-14b7-4c50-a6ad-00f55a3630ca",
+            "product_id": "5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9",
+            "buyer_id": null,
+            "quantity": 1,
+            "unit_price": 195000,
+            "subtotal_amount": 195000,
+            "verification_option": "none",
+            "verification_fee": 0,
+            "total_amount": 195000,
+            "escrow_status": "pending",
+            "tracking_number": null,
+            "created_at": "2026-11-16T14:37:45.995437+00:00"
+          }
+        }
+      }
+    }
+  ],
+  "product": {
+    "name": "1964 Gibson ES-335 (seed listing)",
+    "id": "5d34e2fa-52fe-4d25-85e3-f4aab0eb52d9",
+    "stockBefore": 1
+  },
+  "confirmation": {
+    "url": "https://tonevault-seven.vercel.app/confirmation/8dfa6fa6-14b7-4c50-a6ad-00f55a3630ca",
+    "heading": "Your saved order",
+    "orderId": "8dfa6fa6-14b7-4c50-a6ad-00f55a3630ca",
+    "total": 195000,
+    "status": "pending",
+    "verifiedAfterReload": true,
+    "orderSubmissions": 1
+  }
+}

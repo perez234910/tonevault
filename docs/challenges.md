@@ -32,7 +32,17 @@ Import `docs/postman_collection.json`; set `baseUrl` to a real verified deployme
 
 ## Deployed order evidence
 
-Pending one approved test order on the deployed checkout. Record the actual method, URL, request body, HTTP status, and response from the browser’s Network tab. Use demo contact details and omit authorization headers and cookie values from the evidence.
+On 16 November 2026 at 10:37 p.m. Manila time, a Chromium browser test placed one guest order for the seeded 1964 Gibson ES-335 on the deployed ToneVault site. The checkout used synthetic contact and shipping details, simulated GCash, and no additional verification. The saved order showed a total of **₱195,000** and status **pending**.
+
+| Browser action | Method and URL | Observed status and response |
+| --- | --- | --- |
+| Place simulated order | `POST https://tonevault-seven.vercel.app/api/orders` | **201 Created**. The JSON contained the saved order, a null buyer ID, quantity 1, and total 195000. |
+| Open confirmation | `GET https://tonevault-seven.vercel.app/api/orders/8dfa6fa6-14b7-4c50-a6ad-00f55a3630ca` | **200 OK**. The JSON contained the matching saved order, with the same total and status. |
+| Refresh confirmation | Same GET URL | **200 OK**. The same order loaded again in the checkout browser. |
+
+The [browser Network capture](evidence/challenge-2/deployed-guest-checkout-network.json) includes the exact POST request body and all three JSON responses. Cookie values and authorization headers are omitted. The product API showed stock change from 1 to 0 and the listing status change from `available` to `sold`.
+
+![The deployed guest confirmation after refresh, showing the reference, ₱195,000 total, and pending status](evidence/challenge-2/deployed-guest-confirmation.png)
 
 ### Order path in the checkout source
 
