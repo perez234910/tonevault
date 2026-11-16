@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "ToneVault API",
-    "description": "Catalog and simulated order endpoints with Challenge 1 validation cases. Set baseUrl to an actual verified deployment (localhost is local evidence only). Use an authorized isolated test DB and demo buyer. Obtain explicit approval before any production seed reset or stock-consuming POST. Send GET /api/products first to capture productId and productUnitPrice. Run validation cases before wrong-total case 2, which saves an order and consumes stock. Re-running seed refreshes stock/status/price; never reset production blindly.",
+    "description": "Catalog and guest/account simulated checkout. Run against an authorized test database for writes. GET the catalog first to capture a product ID and unit price. The Challenge 1 wrong-total request consumes stock and saves a guest order. Use Postman’s cookie jar to look up that saved guest order.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -14,15 +14,19 @@
       "value": "b2ba9952-2b7a-4ad2-b84e-06ef55be7bd9"
     },
     {
-      "key": "buyerId",
-      "value": "a073c9e6-2118-4261-9974-ac692060cf9f"
-    },
-    {
       "key": "missingProductId",
       "value": "00000000-0000-4000-8000-000000000000"
     },
     {
       "key": "productUnitPrice",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "buyerAccessToken",
       "value": ""
     }
   ],
@@ -115,7 +119,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"buyer_id\": \"{{buyerId}}\",\n  \"quantity\": -3\n}"
+              "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": -3,\n  \"verification_option\": \"none\",\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"buyer@example.invalid\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Quezon City, 1100, Philippines\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true\n}"
             },
             "url": "{{baseUrl}}/api/orders",
             "description": "Rejects zero or negative quantity with HTTP 400. Also try quantity 0."
@@ -133,6 +137,7 @@
                   "pm.test('201 with server total, or 400', () => pm.expect([201, 400]).to.include(status));",
                   "if (status === 201) {",
                   "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('orderId', body.data.order.id);",
                   "  const unitPrice = Number(pm.collectionVariables.get('productUnitPrice'));",
                   "  pm.test('Catalog GET supplied a valid unit price', () => pm.expect(Number.isFinite(unitPrice) && unitPrice > 0).to.be.true);",
                   "  pm.test('Server total equals catalog price times quantity', () => {",
@@ -153,7 +158,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"buyer_id\": \"{{buyerId}}\",\n  \"quantity\": 1,\n  \"total\": 1,\n  \"total_amount\": 1\n}"
+              "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": 1,\n  \"total\": 1,\n  \"total_amount\": 1,\n  \"verification_option\": \"none\",\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"buyer@example.invalid\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Quezon City, 1100, Philippines\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true\n}"
             },
             "url": "{{baseUrl}}/api/orders",
             "description": "Client sends total: 1. Server must persist catalog price × quantity (201) or reject (400). Creates a real order — run after GET /api/products on an available listing, and after cases 1, 3–6."
@@ -182,7 +187,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"buyer_id\": \"{{buyerId}}\",\n  \"quantity\": 3\n}"
+              "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": 3,\n  \"verification_option\": \"none\",\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"buyer@example.invalid\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Quezon City, 1100, Philippines\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true\n}"
             },
             "url": "{{baseUrl}}/api/orders",
             "description": "Seed listings have stock 1. Quantity 3 must return HTTP 409."
@@ -211,7 +216,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"product_id\": \"{{missingProductId}}\",\n  \"buyer_id\": \"{{buyerId}}\",\n  \"quantity\": 1\n}"
+              "raw": "{\n  \"product_id\": \"{{missingProductId}}\",\n  \"quantity\": 1,\n  \"verification_option\": \"none\",\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"buyer@example.invalid\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Quezon City, 1100, Philippines\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true\n}"
             },
             "url": "{{baseUrl}}/api/orders",
             "description": "Order for a UUID that is not in Supabase. Companion GET is Challenge 1 — 4b."
@@ -260,7 +265,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"buyer_id\": \"{{buyerId}}\"\n}"
+              "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"verification_option\": \"none\",\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"buyer@example.invalid\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Quezon City, 1100, Philippines\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true\n}"
             },
             "url": "{{baseUrl}}/api/orders",
             "description": "Required field `quantity` omitted. Zod returns HTTP 400."
@@ -290,6 +295,67 @@
             "header": [],
             "url": "{{baseUrl}}/api/products?search=zzzz-no-such-guitar-xyz",
             "description": "Keyword search with no hits must be HTTP 200 with data: []."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Saved order confirmation",
+      "item": [
+        {
+          "name": "Read saved guest order (cookie jar)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/orders/{{orderId}}",
+            "description": "Run after a successful guest checkout in the same Postman cookie jar. Use the same base URL."
+          }
+        },
+        {
+          "name": "Create simulated account order (consumes stock)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerAccessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": 1,\n  \"verification_option\": \"none\",\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"buyer@example.invalid\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Quezon City, 1100, Philippines\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/orders",
+            "description": "Consumes stock on the authorized test catalog. Supply the signed-in buyer’s access token from a private environment."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('orderId', pm.response.json().data.order.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Read saved account order (bearer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{buyerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/orders/{{orderId}}",
+            "description": "Set orderId to an order owned by the signed-in demo buyer. Store the buyer access token in a private environment."
           }
         }
       ]

@@ -1,0 +1,130 @@
+{
+  "info": {
+    "name": "Group 2 Member 3 GC2 checkout",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Requires reviewed Member 4 PRs40/41/42 and Member 3 details migration. Guest checkout uses customer fields and cookie jar; optional accounts use a buyer token. Pricing is exclusively Member4: verification_option none/remote/physical. Create consumes stock."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "productId",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Invalid quantity",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": 0,\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Manila\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true,\n  \"verification_option\": \"none\"\n}"
+        },
+        "url": "{{baseUrl}}/api/orders"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Unknown product",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"product_id\": \"cccccccc-cccc-4ccc-8ccc-cccccccccccc\",\n  \"quantity\": 1,\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Manila\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true,\n  \"verification_option\": \"none\"\n}"
+        },
+        "url": "{{baseUrl}}/api/orders"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create buyer order (consumes stock)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"quantity\": 1,\n  \"customer\": {\n    \"full_name\": \"Test Buyer\",\n    \"email\": \"test@example.com\",\n    \"phone\": \"09123456789\",\n    \"address\": \"123 Test Street, Manila\"\n  },\n  \"payment_method\": \"simulated_card\",\n  \"payment_confirmed\": true,\n  \"total\": 1,\n  \"verification_option\": \"none\"\n}"
+        },
+        "url": "{{baseUrl}}/api/orders"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set(\"orderId\", pm.response.json().data.order.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Retrieve saved buyer order",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/orders/{{orderId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

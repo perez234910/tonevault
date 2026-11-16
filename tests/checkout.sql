@@ -1,4 +1,4 @@
--- Disposable database only, with Member 4 pricing and Member 3 details migrations applied.
+-- Disposable database only, with all migrations applied.
 begin;
 insert into auth.users(id,email,raw_user_meta_data) values
  ('a1111111-1111-4111-8111-111111111111','seller@example.test','{}'),
@@ -46,6 +46,12 @@ begin
 end; $$;
 reset role;
 do $$ begin
+ assert not has_any_column_privilege('authenticated', 'public.orders', 'insert'), 'Authenticated clients must use server checkout';
+ assert not has_any_column_privilege('authenticated', 'public.orders', 'update'), 'Authenticated clients cannot change saved orders';
+ assert not has_table_privilege('authenticated', 'public.orders', 'delete,truncate');
+ assert not has_any_column_privilege('anon', 'public.orders', 'insert,update');
+ assert not has_table_privilege('anon', 'public.orders', 'delete,truncate');
+ assert has_table_privilege('authenticated', 'public.orders', 'select'), 'Order reads remain governed by RLS';
  assert not has_table_privilege('anon','public.order_checkout_details','select');
  assert not has_table_privilege('authenticated','public.order_checkout_details','select');
  assert not has_function_privilege('anon','public.place_checkout_order(uuid,uuid,integer,public.verification_option,numeric,numeric,numeric,integer,numeric,numeric,numeric,numeric,text,text,text,text,text,text)','execute');

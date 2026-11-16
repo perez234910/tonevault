@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { createOrderAccess } from "@/src/lib/catalog/order-access";
+import { isCatalogPreview } from "@/src/lib/catalog/preview-mode";
+import { createOrderAccess, GUEST_ORDER_ACCESS_SECONDS } from "@/src/lib/catalog/order-access";
 import { placeCatalogOrder } from "@/src/lib/catalog/queries";
 import { placeCheckoutOrder } from "@/src/lib/catalog/checkout-orders";
 import { createAdminClient } from "@/src/lib/supabase/admin";
-import { actionResultToResponse } from "@/src/lib/catalog/http";
+import { actionResultToResponse, buyerOrderResponse } from "@/src/lib/catalog/http";
 import { revalidateTag } from "next/cache";
-import type { Order } from "@/src/types";
 
 export async function GET(request: Request) {
   const { requireAdmin } = await import("@/src/lib/owner/auth");
@@ -44,6 +44,12 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (isCatalogPreview()) {
+    return Response.json(
+      { ok: false, code: "FORBIDDEN", error: "Sample preview is read-only. Orders are not saved and no payment is taken." },
+      { status: 403 },
+    );
+  }
   let payload: unknown;
   try {
     payload = await request.json();
@@ -71,16 +77,19 @@ export async function POST(request: Request) {
       revalidateTag("products", "max");
       revalidateTag(`product-${result.data.order.product_id}`, "max");
     }
+    const buyerResult = result.ok ? {
+      ...result, data: { ...result.data, order: buyerOrderResponse(result.data.order) },
+    } : result;
     if (result.ok && access) {
-      const response = NextResponse.json(result, { status: 201 });
+      const response = NextResponse.json(buyerResult, { status: 201 });
       response.cookies.set(`order_access_${result.data.order.id}`, access.token, {
         httpOnly: true, sameSite: "strict", secure: new URL(request.url).protocol === "https:",
-        path: `/api/orders/${result.data.order.id}`, maxAge: 60 * 60 * 24 * 7,
+        path: `/api/orders/${result.data.order.id}`, maxAge: GUEST_ORDER_ACCESS_SECONDS,
       });
       response.headers.set("Cache-Control", "private, no-store");
       return response;
     }
-    const response = actionResultToResponse<{ order: Order }>(result, 201);
+    const response = actionResultToResponse(buyerResult, 201);
     response.headers.set("Cache-Control", "private, no-store");
     return response;
   } catch {

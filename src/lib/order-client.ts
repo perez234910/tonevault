@@ -3,6 +3,9 @@ import { z } from "zod";
 const orderSchema = z.object({
   id: z.uuid(), product_id: z.uuid(), buyer_id: z.uuid().nullable(), quantity: z.number().int().positive(),
   total_amount: z.number().nonnegative().finite(), escrow_status: z.enum(["pending","paid","awaiting_shipment","shipped","delivered","approved","payout_released"]),
+  verification_option: z.enum(["none", "remote", "physical"]).optional(),
+  verification_fee: z.number().nonnegative().optional(),
+  subtotal_amount: z.number().nonnegative().optional(),
   tracking_number: z.string().nullable(), created_at: z.iso.datetime({offset:true}),
 });
 export type SavedOrder = z.infer<typeof orderSchema>;

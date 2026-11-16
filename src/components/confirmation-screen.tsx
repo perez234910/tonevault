@@ -16,11 +16,27 @@ export function OrderLookup() {
 }
 
 type State={key:string;accessToken?:string;order?:SavedOrder;product?:ProductDetail;productUnavailable?:boolean;error?:string;kind?:string};
+const verificationLabels = { none: "No additional verification", remote: "Remote verification", physical: "Physical inspection" };
 const statuses=["pending","paid","awaiting_shipment","shipped","delivered","approved","payout_released"];
 export function ConfirmationScreen({id,accessToken}:{id:string;accessToken?:string}) {
  const [attempt,setAttempt]=useState(0);const [state,setState]=useState<State|null>(null);const key=`${id}:${attempt}`;
  useEffect(()=>{const controller=new AbortController();void (async()=>{
-  try {const order=await fetchSavedOrder(id,controller.signal,fetch,{accessToken});let product:ProductDetail|undefined;try{product=await fetchProductDetail(order.product_id,controller.signal)}catch{if(controller.signal.aborted)return;}
+  try {
+   let order: SavedOrder;
+   try {
+     // A guest order can still belong to this browser even when an account is signed in.
+     order = await fetchSavedOrder(id, controller.signal, fetch, { accessToken });
+   } catch (error) {
+     if (accessToken || controller.signal.aborted || !(error instanceof OrderReadError) || error.kind !== "denied") throw error;
+     const token = await import("@/src/lib/supabase")
+       .then(async ({ supabase }) => (await supabase.auth.getSession()).data.session?.access_token)
+       .catch(() => undefined);
+     if (!token || controller.signal.aborted) throw error;
+     order = await fetchSavedOrder(id, controller.signal, fetch, { accessToken: token });
+   }
+   let product: ProductDetail | undefined;
+   try { product = await fetchProductDetail(order.product_id, controller.signal); }
+   catch { if (controller.signal.aborted) return; }
    if(!controller.signal.aborted)setState({key,accessToken,order,product,productUnavailable:!product});
   }catch(error){if(!controller.signal.aborted)setState({key,accessToken,error:error instanceof OrderReadError?error.message:"Unable to load your order. Check your connection and try again.",kind:error instanceof OrderReadError?error.kind:"unavailable"});}
  })();return()=>controller.abort();},[id,key,accessToken]);
@@ -29,5 +45,8 @@ export function ConfirmationScreen({id,accessToken}:{id:string;accessToken?:stri
  const {order,product}=state;const photography=product?productPhotography(product):null;const current=statuses.indexOf(order.escrow_status);
  return <div className="page-container"><h1>Your saved order</h1><p className="mt-4 break-all text-sm text-muted">Reference {order.id}</p><p className="mt-3 text-sm text-muted">Recorded {new Intl.DateTimeFormat("en-PH",{dateStyle:"medium",timeZone:"Asia/Manila"}).format(new Date(order.created_at))}. This page does not process payment.</p>
  <ol className="order-progress" aria-label="Saved order status">{statuses.map((status,index)=><li key={status} aria-current={status===order.escrow_status?"step":undefined}><span className={index<=current?"status-point status-point--reached":"status-point"}>{index+1}</span><span>{status.replaceAll("_"," ")}</span></li>)}</ol>
- <div className="checkout-grid"><section><h2 className="text-xl">{product?instrumentTitle(product):"Ordered instrument"}</h2>{product?<div className="relative mt-6 aspect-[4/3] max-w-md bg-panel"><InstrumentImage src={photography?.images[0]??null} alt={instrumentTitle(product)} sizes="400px" reference={photography?.reference} /></div>:<p className="mt-5 text-sm text-muted">Instrument details are unavailable. The saved order details below remain separate from current catalog availability.</p>}{photography?.reference?<p className="mt-3 text-xs text-muted">Model reference photo; not shipment or verification evidence.</p>:null}<p className="mt-6 text-sm leading-6 text-muted">{order.escrow_status==="pending"?"This order is recorded as pending. No payment or shipment is implied.":`The saved order is marked ${order.escrow_status.replaceAll("_"," ")}. Consult the seller for the next update.`}</p></section><aside className="cart-summary" aria-label="Saved order details"><h2 className="text-xl">Order details</h2><dl className="review-details"><div><dt>Quantity</dt><dd>{order.quantity}</dd></div><div><dt>Saved total</dt><dd>{formatPrice(order.total_amount)}</dd></div><div><dt>Status</dt><dd>{order.escrow_status.replaceAll("_"," ")}</dd></div><div><dt>Tracking</dt><dd>{order.tracking_number||"Not provided"}</dd></div></dl><p className="mt-5 text-xs leading-5 text-muted">Saved totals come from the order service. Contact and shipping information is not available through the current order model.</p></aside></div><Link href="/browse" className="ui-button ui-button--primary mt-8">Back to the storefront</Link></div>;
+ <div className="checkout-grid"><section><h2 className="text-xl">{product?instrumentTitle(product):"Ordered instrument"}</h2>{product?<div className="relative mt-6 aspect-[4/3] max-w-md bg-panel"><InstrumentImage src={photography?.images[0]??null} alt={instrumentTitle(product)} sizes="400px" reference={photography?.reference} /></div>:<p className="mt-5 text-sm text-muted">Instrument details are unavailable. The saved order details below remain separate from current catalog availability.</p>}{photography?.reference?<p className="mt-3 text-xs text-muted">Model reference photo; not shipment or verification evidence.</p>:null}<p className="mt-6 text-sm leading-6 text-muted">{order.escrow_status==="pending"?"This order is recorded as pending. No payment or shipment is implied.":`The saved order is marked ${order.escrow_status.replaceAll("_"," ")}. Consult the seller for the next update.`}</p></section><aside className="cart-summary" aria-label="Saved order details"><h2 className="text-xl">Order details</h2><dl className="review-details"><div><dt>Quantity</dt><dd>{order.quantity}</dd></div>{order.subtotal_amount !== undefined && <div><dt>Guitar subtotal</dt><dd>{formatPrice(order.subtotal_amount)}</dd></div>}
+ {order.verification_option && <div><dt>Verification</dt><dd>{verificationLabels[order.verification_option]}</dd></div>}
+ {order.verification_fee !== undefined && <div><dt>Verification fee</dt><dd>{formatPrice(order.verification_fee)}</dd></div>}
+ <div><dt>Saved total</dt><dd>{formatPrice(order.total_amount)}</dd></div><div><dt>Status</dt><dd>{order.escrow_status.replaceAll("_"," ")}</dd></div><div><dt>Tracking</dt><dd>{order.tracking_number||"Not provided"}</dd></div></dl><p className="mt-5 text-xs leading-5 text-muted">Saved totals come from the order service. Contact and shipping information is not available through the current order model.</p></aside></div><Link href="/browse" className="ui-button ui-button--primary mt-8">Back to the storefront</Link></div>;
 }
